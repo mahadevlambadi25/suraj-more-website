@@ -1,0 +1,40 @@
+# ── Dependencies & build output ─────────────────────────
+node_modules
+.next
+.next-*
+out
+*.tsbuildinfo
+next-env.d.ts
+.vercel
+coverage
+
+# ── Secrets: every env file except the documented templates ──
+.env
+.env.*
+!.env.example
+!.env.neon.example
+
+# ── Private keys & certificates ─────────────────────────
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+id_rsa*
+id_ed25519*
+id_ecdsa*
+
+# ── Personal data & local databases: never commit ───────
+.data
+backups
+.pgdata
+*.dump
+*.sql.gz
+*.sqlite
+*.db
+
+# ── Logs & OS/editor clutter ────────────────────────────
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db

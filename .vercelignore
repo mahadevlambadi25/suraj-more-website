@@ -1,0 +1,36 @@
+# Files never uploaded by `vercel deploy` from a local machine.
+# (Git-based deploys already exclude these through .gitignore.)
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Private keys & certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+id_rsa*
+id_ed25519*
+id_ecdsa*
+
+# Personal data & local databases
+.data
+backups
+.pgdata
+*.dump
+*.sql.gz
+*.sqlite
+*.db
+
+# Build output, dependencies, logs, tests
+.next
+.next-*
+node_modules
+coverage
+*.log
+.DS_Store
+Thumbs.db
+tests

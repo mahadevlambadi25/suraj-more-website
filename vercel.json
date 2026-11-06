@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "regions": ["sin1"],
+  "buildCommand": "node scripts/check-env.mjs && npm run build",
+  "functions": {
+    "src/app/api/webhooks/cashfree/route.ts": { "maxDuration": 30 }
+  }
+}

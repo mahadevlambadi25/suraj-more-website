@@ -1,0 +1,487 @@
+// Suraj More website — PostgreSQL schema (Prisma ORM)
+// Conventions:
+//   • ids: UUID (uuid()) — order numbers sent to Cashfree are a separate unique `orderNumber`
+//   • money: integer minor units (paise). Never floats.
+//   • timestamps: timestamptz (UTC), createdAt/updatedAt on every mutable table
+//   • payment history is append-only: payments, refunds, webhook events and order events are never deleted
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL") // pooled connection (Neon: -pooler host, ?pgbouncer=true)
+  directUrl = env("DIRECT_URL") // direct connection, used only by `prisma migrate`
+}
+
+// ───────────────────────────── Admin & auth ─────────────────────────────
+
+enum AdminRole {
+  OWNER // everything, incl. managing admins
+  ADMIN // operational actions (refunds, cohorts, decisions)
+  VIEWER // read-only
+}
+
+model Admin {
+  id           String                  @id @default(uuid()) @db.Uuid
+  email        String                  @unique
+  name         String
+  passwordHash String
+  role         AdminRole               @default(ADMIN)
+  isActive     Boolean                 @default(true)
+  lastLoginAt  DateTime?               @db.Timestamptz(3)
+  createdAt    DateTime                @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime                @updatedAt @db.Timestamptz(3)
+  sessions     AdminSession[]
+  auditLogs    AuditLog[]
+  refunds      Refund[]
+  decisions    MentorshipApplication[]
+}
+
+model AdminSession {
+  id         String   @id @default(uuid()) @db.Uuid
+  adminId    String   @db.Uuid
+  admin      Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  tokenHash  String   @unique // sha256 of the cookie token; raw token is never stored
+  expiresAt  DateTime @db.Timestamptz(3)
+  lastSeenAt DateTime @default(now()) @db.Timestamptz(3)
+  ipHash     String?
+  userAgent  String?
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([adminId])
+  @@index([expiresAt])
+}
+
+/// Serverless-safe rate limiting (login + public forms). Rows older than a day are pruned.
+model RateLimitEvent {
+  id        String   @id @default(uuid()) @db.Uuid
+  bucket    String
+  key       String // hashed IP / email
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([bucket, key, createdAt])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  adminId    String?  @db.Uuid
+  admin      Admin?   @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  action     String // e.g. refund.request, application.accept, cohort.update, auth.login
+  entityType String?
+  entityId   String?
+  metadata   Json?
+  ipHash     String?
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([createdAt])
+  @@index([entityType, entityId])
+  @@index([adminId])
+}
+
+model AppSetting {
+  key         String   @id
+  value       Json
+  updatedById String?  @db.Uuid
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
+}
+
+// ───────────────────────────── People & consent ─────────────────────────────
+
+enum LeadSource {
+  FREE_TRAINING
+  WORKSHOP
+  MENTORSHIP
+  WAITLIST
+  IMPORT
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  CUSTOMER
+  UNSUBSCRIBED
+}
+
+/// One row per person (unique email). First-touch attribution is kept on the lead.
+model Lead {
+  id          String     @id @default(uuid()) @db.Uuid
+  email       String     @unique
+  name        String
+  phone       String?
+  source      LeadSource // first source
+  status      LeadStatus @default(NEW)
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  utmTerm     String?
+  utmContent  String?
+  referrer    String?
+  landingPage String?
+  createdAt   DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime   @updatedAt @db.Timestamptz(3)
+
+  consents                  ConsentRecord[]
+  freeTrainingRegistrations FreeTrainingRegistration[]
+  orders                    Order[]
+  workshopRegistrations     WorkshopRegistration[]
+  applications              MentorshipApplication[]
+  waitlistEntries           WaitlistEntry[]
+
+  @@index([createdAt])
+  @@index([source, createdAt])
+  @@index([status])
+  @@index([name])
+}
+
+enum ConsentType {
+  MARKETING
+  WHATSAPP
+  TERMS
+}
+
+/// Append-only consent ledger: exact wording, time and source of every grant/refusal.
+model ConsentRecord {
+  id        String      @id @default(uuid()) @db.Uuid
+  leadId    String      @db.Uuid
+  lead      Lead        @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  type      ConsentType
+  granted   Boolean
+  wording   String
+  version   String?
+  source    String
+  createdAt DateTime    @default(now()) @db.Timestamptz(3)
+
+  @@index([leadId, type, createdAt])
+}
+
+model FreeTrainingRegistration {
+  id              String   @id @default(uuid()) @db.Uuid
+  leadId          String   @db.Uuid
+  lead            Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  audienceType    String
+  city            String?
+  businessUrl     String?
+  whatsappConsent Boolean  @default(false)
+  attribution     Json?
+  createdAt       DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([createdAt])
+  @@index([leadId])
+}
+
+// ───────────────────────────── Workshop ─────────────────────────────
+
+enum CohortStatus {
+  DRAFT
+  OPEN
+  CLOSED
+}
+
+model WorkshopCohort {
+  id                     String       @id @default(uuid()) @db.Uuid
+  slug                   String       @unique
+  title                  String
+  startsAt               DateTime     @db.Timestamptz(3)
+  endsAt                 DateTime     @db.Timestamptz(3)
+  timezone               String       @default("Asia/Kolkata")
+  status                 CohortStatus @default(DRAFT)
+  seatLimit              Int? // shown/enforced only when operationally true
+  pricePaise             Int
+  compareAtPricePaise    Int?
+  compareAtPriceVerified Boolean      @default(false)
+  vipAddonActive         Boolean      @default(false)
+  vipAddonTitle          String       @default("Recording + VIP Pack")
+  vipAddonPricePaise     Int          @default(0)
+  vipAddonIncludes       String[]
+  sessions               Json // [{ label, startsAt, endsAt, topic }]
+  reminderCopy           String       @default("")
+  zoomJoinUrl            String? // PRIVATE: attendee link, sent only after verified payment
+  zoomPasscode           String? // PRIVATE
+  isSample               Boolean      @default(false)
+  createdAt              DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt              DateTime     @updatedAt @db.Timestamptz(3)
+
+  orders        Order[]
+  registrations WorkshopRegistration[]
+
+  @@index([status, startsAt])
+}
+
+enum RegistrationStatus {
+  CONFIRMED
+  CANCELLED
+  REFUNDED
+}
+
+/// Created exactly once per paid order (orderId unique).
+model WorkshopRegistration {
+  id        String             @id @default(uuid()) @db.Uuid
+  cohortId  String             @db.Uuid
+  cohort    WorkshopCohort     @relation(fields: [cohortId], references: [id])
+  orderId   String             @unique @db.Uuid
+  order     Order              @relation(fields: [orderId], references: [id])
+  leadId    String             @db.Uuid
+  lead      Lead               @relation(fields: [leadId], references: [id])
+  name      String
+  email     String
+  phone     String
+  vipAddon  Boolean            @default(false)
+  status    RegistrationStatus @default(CONFIRMED)
+  attended  Boolean?
+  createdAt DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime           @updatedAt @db.Timestamptz(3)
+
+  @@index([cohortId, status])
+}
+
+// ───────────────────────────── Orders & payments ─────────────────────────────
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  DROPPED
+  NEEDS_REVIEW
+  REFUND_PENDING
+  REFUNDED
+}
+
+enum PaymentProvider {
+  CASHFREE
+  MOCK
+}
+
+model Order {
+  id                     String          @id @default(uuid()) @db.Uuid
+  orderNumber            String          @unique // sent to Cashfree as order_id
+  cohortId               String          @db.Uuid
+  cohort                 WorkshopCohort  @relation(fields: [cohortId], references: [id])
+  leadId                 String          @db.Uuid
+  lead                   Lead            @relation(fields: [leadId], references: [id])
+  customerName           String
+  customerEmail          String
+  customerPhone          String
+  vipAddon               Boolean         @default(false)
+  lineItems              Json // [{ label, amountPaise }]
+  amountPaise            Int
+  currency               String          @default("INR")
+  status                 OrderStatus     @default(PENDING)
+  provider               PaymentProvider
+  providerMode           String // mock | sandbox | production
+  providerOrderId        String? // Cashfree cf_order_id
+  paymentSessionId       String?
+  paidAt                 DateTime?       @db.Timestamptz(3)
+  termsVersion           String
+  termsAcceptedAt        DateTime        @db.Timestamptz(3)
+  attribution            Json?
+  purchaseEventClaimedAt DateTime?       @db.Timestamptz(3)
+  confirmationSentAt     DateTime?       @db.Timestamptz(3)
+  zoomSentAt             DateTime?       @db.Timestamptz(3)
+  crmSyncedAt            DateTime?       @db.Timestamptz(3)
+  fulfilmentError        String?
+  createdAt              DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt              DateTime        @updatedAt @db.Timestamptz(3)
+
+  payments      Payment[]
+  refunds       Refund[]
+  events        OrderEvent[]
+  webhookEvents WebhookEvent[]
+  registration  WorkshopRegistration?
+
+  @@index([status, createdAt])
+  @@index([cohortId, status])
+  @@index([customerEmail])
+  @@index([createdAt])
+}
+
+/// Human-readable order timeline (append-only).
+model OrderEvent {
+  id        String   @id @default(uuid()) @db.Uuid
+  orderId   String   @db.Uuid
+  order     Order    @relation(fields: [orderId], references: [id])
+  type      String
+  detail    String?
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([orderId, createdAt])
+}
+
+enum PaymentStatus {
+  SUCCESS
+  FAILED
+  PENDING
+  USER_DROPPED
+  CANCELLED
+}
+
+model Payment {
+  id                String          @id @default(uuid()) @db.Uuid
+  orderId           String          @db.Uuid
+  order             Order           @relation(fields: [orderId], references: [id])
+  provider          PaymentProvider
+  providerPaymentId String
+  status            PaymentStatus
+  amountPaise       Int
+  currency          String
+  method            String?
+  message           String?
+  paidAt            DateTime?       @db.Timestamptz(3)
+  createdAt         DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime        @updatedAt @db.Timestamptz(3)
+
+  @@unique([provider, providerPaymentId])
+  @@index([orderId])
+}
+
+enum WebhookStatus {
+  RECEIVED
+  PROCESSED
+  FAILED
+  IGNORED
+}
+
+model WebhookEvent {
+  id                String          @id @default(uuid()) @db.Uuid
+  provider          PaymentProvider
+  idempotencyKey    String          @unique // x-idempotency-key or sha256(raw body)
+  eventType         String
+  orderNumber       String?
+  orderId           String?         @db.Uuid
+  order             Order?          @relation(fields: [orderId], references: [id])
+  signatureVerified Boolean
+  status            WebhookStatus   @default(RECEIVED)
+  attempts          Int             @default(0)
+  lastError         String?
+  payload           Json // needed for safe, idempotent retries
+  receivedAt        DateTime        @default(now()) @db.Timestamptz(3)
+  processedAt       DateTime?       @db.Timestamptz(3)
+
+  @@index([status, receivedAt])
+  @@index([orderNumber])
+}
+
+enum RefundStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  CANCELLED
+  ONHOLD
+}
+
+model Refund {
+  id               String       @id @default(uuid()) @db.Uuid
+  refundNumber     String       @unique // our refund_id, also the provider idempotency key
+  orderId          String       @db.Uuid
+  order            Order        @relation(fields: [orderId], references: [id])
+  providerRefundId String?
+  amountPaise      Int
+  status           RefundStatus @default(PENDING)
+  reason           String?
+  failureReason    String?
+  requestedById    String?      @db.Uuid
+  requestedBy      Admin?       @relation(fields: [requestedById], references: [id], onDelete: SetNull)
+  processedAt      DateTime?    @db.Timestamptz(3)
+  createdAt        DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime     @updatedAt @db.Timestamptz(3)
+
+  @@index([orderId])
+  @@index([status, createdAt])
+}
+
+// ───────────────────────────── Mentorship & waitlist ─────────────────────────────
+
+enum ApplicationStatus {
+  NEW
+  ACCEPTED
+  REJECTED
+}
+
+model MentorshipApplication {
+  id                String            @id @default(uuid()) @db.Uuid
+  leadId            String            @db.Uuid
+  lead              Lead              @relation(fields: [leadId], references: [id])
+  name              String
+  email             String
+  phone             String
+  link              String
+  offer             String
+  salesChallenge    String
+  desiredOutcome    String
+  timeline          String
+  timezone          String
+  revenueRange      String?
+  status            ApplicationStatus @default(NEW)
+  decidedAt         DateTime?         @db.Timestamptz(3)
+  decidedById       String?           @db.Uuid
+  decidedBy         Admin?            @relation(fields: [decidedById], references: [id], onDelete: SetNull)
+  decisionNote      String?
+  bookingLinkSentAt DateTime?         @db.Timestamptz(3)
+  attribution       Json?
+  createdAt         DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime          @updatedAt @db.Timestamptz(3)
+
+  @@index([status, createdAt])
+  @@index([email])
+}
+
+model WaitlistEntry {
+  id          String    @id @default(uuid()) @db.Uuid
+  leadId      String    @db.Uuid
+  lead        Lead      @relation(fields: [leadId], references: [id])
+  programId   String // workshop | inner-circle
+  name        String
+  email       String
+  notifiedAt  DateTime? @db.Timestamptz(3)
+  attribution Json?
+  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
+
+  @@unique([email, programId])
+  @@index([programId, createdAt])
+}
+
+// ───────────────────────────── Integrations & tracking ─────────────────────────────
+
+enum IntegrationChannel {
+  EMAIL
+  WHATSAPP
+  CRM
+  OPS_ALERT
+}
+
+enum IntegrationStatus {
+  SENT // provider accepted it
+  NOT_CONFIGURED // no provider configured — NOT delivered
+  SKIPPED // e.g. promotional without consent
+  FAILED
+}
+
+/// Delivery ledger for every outbound message / sync. Honest status — "logged" is never "sent".
+model IntegrationEvent {
+  id          String             @id @default(uuid()) @db.Uuid
+  channel     IntegrationChannel
+  kind        String // transactional | promotional | sync | alert
+  template    String
+  recipient   String?
+  status      IntegrationStatus
+  error       String?
+  payload     Json?
+  relatedType String?
+  relatedId   String?
+  createdAt   DateTime           @default(now()) @db.Timestamptz(3)
+
+  @@index([status, createdAt])
+  @@index([relatedType, relatedId])
+}
+
+model OutboundClick {
+  id        String   @id @default(uuid()) @db.Uuid
+  target    String
+  referrer  String?
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([target, createdAt])
+}
