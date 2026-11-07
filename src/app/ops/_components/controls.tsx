@@ -6,7 +6,7 @@ import { useRef, type ReactNode } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Icon } from './icons';
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'danger-outline';
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'danger-outline' | 'success';
 
 /** Submit button that shows a spinner and disables itself while its form's server action runs. */
 export function SubmitButton({
@@ -57,17 +57,19 @@ export function ConfirmButton({
   name,
   value,
   disabled,
+  block,
 }: {
   children: ReactNode;
   title: string;
   message: ReactNode;
   confirmLabel: string;
-  tone?: 'default' | 'danger';
+  tone?: 'default' | 'danger' | 'success';
   variant?: Variant;
   size?: 'sm';
   name?: string;
   value?: string;
   disabled?: boolean;
+  block?: boolean;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
@@ -80,12 +82,12 @@ export function ConfirmButton({
 
   return (
     <>
-      <button ref={trigger} type="button" onClick={open} disabled={disabled} className={`o-btn o-btn--${variant} ${size === 'sm' ? 'o-btn--sm' : ''}`}>
+      <button ref={trigger} type="button" onClick={open} disabled={disabled} className={`o-btn o-btn--${variant} ${size === 'sm' ? 'o-btn--sm' : ''} ${block ? 'o-btn--block' : ''}`}>
         {children}
       </button>
       <dialog ref={dialog} className="o-dialog" data-tone={tone} aria-label={title}>
         <div className="o-dialog-body">
-          <span className="o-dialog-icon"><Icon name={tone === 'danger' ? 'alert' : 'info'} size={20} /></span>
+          <span className="o-dialog-icon"><Icon name={tone === 'danger' ? 'alert' : tone === 'success' ? 'check' : 'info'} size={20} /></span>
           <div>
             <h2>{title}</h2>
             <p>{message}</p>
@@ -95,7 +97,7 @@ export function ConfirmButton({
           <button type="button" className="o-btn o-btn--secondary" onClick={() => dialog.current?.close()}>
             Cancel
           </button>
-          <SubmitButton variant={tone === 'danger' ? 'danger' : 'primary'} name={name} value={value} pendingLabel="Please wait…">
+          <SubmitButton variant={tone === 'danger' ? 'danger' : tone === 'success' ? 'success' : 'primary'} name={name} value={value} pendingLabel="Please wait…">
             {confirmLabel}
           </SubmitButton>
         </div>

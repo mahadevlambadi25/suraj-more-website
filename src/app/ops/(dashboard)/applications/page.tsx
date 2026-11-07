@@ -28,15 +28,24 @@ export default async function ApplicationsPage({ searchParams }: { searchParams:
         ) : (
           <div className="o-table-wrap">
             <table className="o-table">
-              <thead><tr><th>Applicant</th><th className="o-hide-sm">Offer</th><th className="o-hide-sm">Timeline</th><th>Status</th><th className="o-hide-sm">Received</th></tr></thead>
+              <thead><tr><th>Applicant</th><th className="o-hide-sm">Offer</th><th className="o-hide-sm">Timeline</th><th className="o-hide-sm">Status</th><th className="o-hide-sm">Received</th><th className="o-num"><span className="o-sr-only">Actions</span></th></tr></thead>
               <tbody>
                 {rows.map((a) => (
                   <tr key={a.id}>
-                    <td><Link href={`/ops/applications/${a.id}`} className="o-row-link">{a.name}</Link><span className="o-cell-sub">{a.email}</span></td>
+                    <td>
+                      <Link href={`/ops/applications/${a.id}`} className="o-row-link">{a.name}</Link>
+                      <span className="o-cell-sub">{a.email}</span>
+                      <span className="o-show-sm" style={{ marginTop: 6 }}><Badge value={a.status}>{a.status}</Badge></span>
+                    </td>
                     <td className="o-hide-sm" style={{ maxWidth: 420 }}>{a.offer.length > 120 ? `${a.offer.slice(0, 120)}…` : a.offer}</td>
                     <td className="o-hide-sm o-small">{timeline(a.timeline)}</td>
-                    <td><Badge value={a.status}>{a.status === 'NEW' ? 'awaiting decision' : undefined}</Badge></td>
+                    <td className="o-hide-sm"><Badge value={a.status}>{a.status}</Badge></td>
                     <td className="o-hide-sm o-nowrap">{fmtDate(a.createdAt)}</td>
+                    <td className="o-num">
+                      <Link href={`/ops/applications/${a.id}`} className="o-btn o-btn--secondary o-btn--sm o-view-btn" aria-label={`View details for ${a.name}`}>
+                        View Details <span aria-hidden="true">→</span>
+                      </Link>
+                    </td>
                   </tr>
                 ))}
               </tbody>

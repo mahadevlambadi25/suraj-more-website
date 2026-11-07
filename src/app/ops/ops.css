@@ -196,6 +196,8 @@
 .o-btn--danger:hover:not(:disabled) { background: #912018; }
 .o-btn--danger-outline { background: #fff; color: var(--o-bad) !important; border-color: var(--o-bad-bd); }
 .o-btn--danger-outline:hover:not(:disabled) { background: var(--o-bad-bg); }
+.o-btn--success { background: var(--o-ok); color: #fff !important; box-shadow: var(--o-shadow); }
+.o-btn--success:hover:not(:disabled) { background: #05603a; }
 .o-btn--sm { height: 32px; padding: 0 11px; font-size: 13px; }
 .o-btn--block { width: 100%; }
 .o-spinner { width: 14px; height: 14px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: o-spin 0.7s linear infinite; }
@@ -300,6 +302,24 @@
 .o-dialog-body { padding: 22px 22px 6px; display: flex; gap: 14px; }
 .o-dialog-icon { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--o-navy-50); color: var(--o-navy); }
 .o-dialog[data-tone='danger'] .o-dialog-icon { background: var(--o-bad-bg); color: var(--o-bad); }
+.o-dialog[data-tone='success'] .o-dialog-icon { background: var(--o-ok-bg); color: var(--o-ok); }
+
+/* Mentorship application review */
+.o-status-banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 14px 16px; border: 1px solid; border-radius: var(--o-radius); }
+.o-status-banner[data-status='NEW'] { background: var(--o-navy-50); border-color: var(--o-navy-100); }
+.o-status-banner[data-status='ACCEPTED'] { background: var(--o-ok-bg); border-color: var(--o-ok-bd); }
+.o-status-banner[data-status='REJECTED'] { background: var(--o-bad-bg); border-color: var(--o-bad-bd); }
+.o-status-banner-label { font-size: 12px; color: var(--o-text-3); text-transform: uppercase; letter-spacing: 0.04em; }
+.o-status-banner strong { display: block; font-size: 18px; letter-spacing: 0.02em; margin-top: 2px; }
+.o-status-banner[data-status='NEW'] strong { color: var(--o-navy); }
+.o-status-banner[data-status='ACCEPTED'] strong { color: var(--o-ok); }
+.o-status-banner[data-status='REJECTED'] strong { color: var(--o-bad); }
+.o-status-banner p { margin: 0; font-size: 13px; color: var(--o-text-2); flex: 1 1 220px; }
+.o-decision-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+.o-decision-actions .o-btn { height: 42px; }
+.o-decision-hint { margin: 6px 0 0; font-size: 12.5px; color: var(--o-text-3); }
+.o-view-btn { white-space: nowrap; }
+.o-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .o-dialog h2 { font-size: 16px; font-weight: 600; margin: 0 0 6px; }
 .o-dialog p { color: var(--o-text-2); margin: 0; line-height: 1.5; }
 .o-dialog-actions { display: flex; justify-content: flex-end; gap: 8px; padding: 18px 22px 22px; }
@@ -363,4 +383,7 @@
   .o-menu { position: fixed; left: 12px; right: 12px; top: calc(var(--o-top) + 4px); width: auto; }
   .o-crumbs li:not(:last-child) { display: none; }
   .o-content { padding: 20px 16px 48px; }
+  .o-decision-actions { grid-template-columns: minmax(0, 1fr); }
+  .o-view-btn { height: 30px; padding: 0 10px; font-size: 12.5px; }
+  .o-table td:has(> .o-view-btn) { padding-left: 4px; vertical-align: middle; }
 }

@@ -7,6 +7,7 @@ import { getMentorshipBookingUrl } from '@/lib/settings';
 import { TIMELINES } from '@/lib/validation';
 import { decideApplicationAction } from '../../../actions';
 import { ConfirmButton } from '../../../_components/controls';
+import { Icon } from '../../../_components/icons';
 import { Alert, BackLink, Badge, Card, Flash, fmtDate, KV, PageHeader, type SP } from '../../../_components/ui';
 
 export default async function ApplicationDetail({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: SP }) {
@@ -24,6 +25,18 @@ export default async function ApplicationDetail({ params, searchParams }: { para
       <PageHeader title={a.name} description={<>Mentorship application · received {fmtDate(a.createdAt)}</>} actions={<BackLink href="/ops/applications">Applications</BackLink>} />
       <Flash msg={sp.msg} err={sp.err} />
 
+      <div className="o-status-banner" data-status={a.status} role="status" style={{ marginBottom: 20 }}>
+        <div>
+          <span className="o-status-banner-label">Application status</span>
+          <strong>{a.status}</strong>
+        </div>
+        <p>
+          {a.status === 'NEW'
+            ? 'Awaiting a decision. An application can be decided only once.'
+            : `${a.status === 'ACCEPTED' ? 'Accepted' : 'Rejected'}${a.decidedBy?.name ? ` by ${a.decidedBy.name}` : ''} on ${fmtDate(a.decidedAt)}.`}
+        </p>
+      </div>
+
       <div className="o-grid-main">
         <div className="o-stack">
           <Card title="Their business">
@@ -35,7 +48,7 @@ export default async function ApplicationDetail({ params, searchParams }: { para
           <Card title="Applicant">
             <KV
               items={[
-                ['Status', <Badge key="s" value={a.status}>{a.status === 'NEW' ? 'awaiting decision' : undefined}</Badge>],
+                ['Status', <Badge key="s" value={a.status}>{a.status}</Badge>],
                 ['Email', <a key="e" href={`mailto:${a.email}`}>{a.email}</a>],
                 ['Phone', a.phone],
                 ['Website / social', a.link],
@@ -69,13 +82,16 @@ export default async function ApplicationDetail({ params, searchParams }: { para
                   <textarea className="o-textarea" id="note" name="note" rows={3} maxLength={1000} placeholder="Only visible to your team" />
                 </div>
                 {!bookingUrl && <Alert tone="info">Add the mentorship booking link in <Link href="/ops/settings">Settings</Link> before accepting — it is emailed only after acceptance.</Alert>}
-                <div className="o-form-actions" style={{ justifyContent: 'flex-start' }}>
-                  <ConfirmButton variant="primary" name="decision" value="ACCEPTED" disabled={!bookingUrl} title="Accept this application?" message={`${a.name} will be emailed your booking link so they can schedule a conversation.`} confirmLabel="Accept & send link">
-                    Accept
-                  </ConfirmButton>
-                  <ConfirmButton variant="danger-outline" tone="danger" name="decision" value="REJECTED" title="Reject this application?" message={`${a.name} will be told this isn’t the right fit right now. This cannot be undone.`} confirmLabel="Reject application">
-                    Reject
-                  </ConfirmButton>
+                <div>
+                  <div className="o-decision-actions">
+                    <ConfirmButton variant="success" tone="success" block name="decision" value="ACCEPTED" disabled={!bookingUrl} title="Accept this application?" message={`${a.name} will be marked ACCEPTED and emailed your booking link so they can schedule a conversation. This cannot be undone.`} confirmLabel="Yes, accept application">
+                      <Icon name="check" size={16} /> Accept Application
+                    </ConfirmButton>
+                    <ConfirmButton variant="danger" tone="danger" block name="decision" value="REJECTED" title="Reject this application?" message={`${a.name} will be marked REJECTED and told this isn’t the right fit right now. This cannot be undone.`} confirmLabel="Yes, reject application">
+                      <Icon name="x" size={16} /> Reject Application
+                    </ConfirmButton>
+                  </div>
+                  {!bookingUrl && <p className="o-decision-hint">Accept is unavailable until a booking link is set. Reject is always available.</p>}
                 </div>
               </form>
             </Card>
