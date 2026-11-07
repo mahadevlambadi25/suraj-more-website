@@ -52,6 +52,8 @@ export interface Program {
   title: string;
   tierLabel: string;
   summary: string;
+  /** Short line used on the offer-ladder cards; falls back to `summary`. */
+  ladderSummary?: string;
   audience: string[];
   format: string;
   curriculum: string[];

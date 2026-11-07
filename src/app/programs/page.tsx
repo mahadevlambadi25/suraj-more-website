@@ -5,16 +5,18 @@ import { getActiveCohort, getFaqs, getPrograms } from '@/lib/cms';
 import { pageMeta } from '@/lib/seo';
 
 export const metadata = pageMeta({
-  title: 'Programs',
-  description: 'Level Zero (free), The One Skill Workshop (live) and Premium Mentorship (application only). Find the right next step for you.',
+  title: 'Sales Coaching Programs | Suraj More',
+  absoluteTitle: true,
+  description: 'Compare Level Zero (free), the One Skill Workshop (live) and Premium Mentorship (application only), and find your next step.',
   path: '/programs',
 });
 
+// "Which one fits?" cards — approved copy document §3.
 const FIT = [
-  { who: 'Coaches (health, fitness, mindset and more)', need: 'You want to lead high-trust sales calls while staying focused on coaching.', next: 'Start with the free training or join the One Skill Workshop.', href: '/free-training', label: 'Watch the Free Training' },
-  { who: 'Consultants and agency owners', need: 'Your offer is strong — your sales process needs structure.', next: 'Apply for Premium Mentorship.', href: '/mentorship', label: 'Apply for Mentorship' },
-  { who: 'Sales professionals and closers', need: 'You want sharper discovery, objection handling and closing.', next: 'Join Level Zero, then the workshop.', href: '/level-zero', label: 'Join Level Zero' },
-  { who: 'You already know Suraj', need: 'You want to see the programs and the proof.', next: 'Compare the programs below.', href: '#ladder', label: 'Compare programs' },
+  { who: 'A coach (health, fitness, mindset and more)', need: 'To lead high-trust sales calls while staying focused on coaching.', next: 'Free training, then the workshop.', href: '/free-training', label: 'Watch the Free Training' },
+  { who: 'A consultant or agency owner', need: 'Your offer is strong; your sales process needs structure.', next: 'Premium Mentorship.', href: '/mentorship', label: 'Apply for Mentorship' },
+  { who: 'A sales professional or closer', need: 'Sharper discovery, objection handling and closing.', next: 'Level Zero, then the workshop.', href: '/level-zero', label: 'Join Level Zero' },
+  { who: 'Already following Suraj', need: 'To compare the programs.', next: 'See below.', href: '#ladder', label: 'Compare Programs' },
 ];
 
 export default async function ProgramsPage() {
@@ -26,18 +28,18 @@ export default async function ProgramsPage() {
       <PageHero
         eyebrow="Programs"
         title="Choose the right next step."
-        lead="Three clearly different ways to work with Suraj — from a free starting point to private, application-only mentorship."
+        lead="Three clearly different ways to work with Suraj, from a free starting point to private, application-only mentorship."
       />
 
       <section className="section">
         <div className="container">
-          <SectionHead eyebrow="Which one fits?" title="Find yourself below" />
+          <SectionHead title="Which one fits?" />
           <div className="cards">
             {FIT.map((f) => (
               <article key={f.who} className="card" style={{ display: 'flex', flexDirection: 'column' }}>
                 <h3>{f.who}</h3>
                 <p>{f.need}</p>
-                <p style={{ color: 'var(--text)', fontWeight: 500 }}>{f.next}</p>
+                <p style={{ color: 'var(--text)', fontWeight: 500 }}>Best next step: {f.next}</p>
                 <TrackedLink href={f.href} className="text-link" cta={`fit_${f.label}`} placement="programs_fit">
                   {f.label} →
                 </TrackedLink>
@@ -53,7 +55,7 @@ export default async function ProgramsPage() {
           <OfferLadder programs={programs} cohort={cohort} />
           {innerCircle && (
             <p className="center small" style={{ marginTop: 32 }}>
-              <span className="tag tag--muted">Coming soon</span>&nbsp; <strong>{innerCircle.title}</strong> — {innerCircle.summary}
+              <span className="tag tag--muted">Coming soon</span>&nbsp; <strong>{innerCircle.title}</strong>: coming soon. Details will be shared once confirmed.
             </p>
           )}
         </div>

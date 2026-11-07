@@ -82,13 +82,13 @@ export function OfferLadder({ programs, cohort }: { programs: Program[]; cohort:
               ) : (
                 <>
                   <p className="price"><small>Not currently open</small></p>
-                  <p className="offer-status">Join the waitlist to hear about the next cohort.</p>
+                  <p className="offer-status">Join the waitlist for the next dates.</p>
                 </>
               )
             ) : (
               <p className="price">{p.priceLabel ?? <small>By application</small>}</p>
             )}
-            <p>{p.summary}</p>
+            <p>{p.ladderSummary ?? p.summary}</p>
             <ul className="check-list">
               {p.curriculum.slice(0, 3).map((c) => (
                 <li key={c}>{c}</li>
@@ -129,8 +129,8 @@ export function ProofList({ testimonials, caseStudies, ctaHref = '/mentorship', 
       <div className="empty-state">
         <h3>Client stories are being verified</h3>
         <p>
-          We only publish stories with the client’s written permission, their real name and role, and outcomes we can show the source for. The first
-          stories will appear here soon.
+          We only publish stories with the client’s written permission, their real name, and a source for every number. The first stories are being
+          verified.
         </p>
         <TrackedLink href={ctaHref} className="btn btn--secondary" cta="proof_empty" placement="proof">
           {ctaLabel} <ArrowRight />
@@ -174,7 +174,7 @@ export function ProofList({ testimonials, caseStudies, ctaHref = '/mentorship', 
           <p className="disclaimer">{c.caveat}</p>
         </article>
       ))}
-      <p className="disclaimer">Results vary. These are individual experiences, not typical or guaranteed outcomes.</p>
+      <p className="disclaimer">Results vary. These are individual results, not typical or guaranteed outcomes.</p>
     </div>
   );
 }

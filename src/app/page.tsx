@@ -19,22 +19,22 @@ export const metadata = pageMeta({
   title: 'Suraj More | Premium Sales Coach & Sales System Builder',
   absoluteTitle: true,
   description:
-    'Practical high-ticket sales coaching for coaches, consultants and agency owners. Lead better sales conversations with a repeatable conversion system.',
+    'High-ticket sales coaching for coaches, consultants and agency owners. Lead better sales conversations with a repeatable structure.',
   path: '/',
 });
 
 const PAINS = [
   {
     title: '“I need to think about it.”',
-    body: 'Good calls end in polite delays. The prospect liked you, liked the offer — and still didn’t decide.',
+    body: 'The call felt great. They liked you and the offer. And they still didn’t decide.',
   },
   {
     title: 'Conversions that swing month to month',
-    body: 'Some weeks you close, some weeks you don’t, and you can’t say exactly why. That makes growth feel like luck.',
+    body: 'Some weeks you close, some weeks you don’t, and you can’t say exactly why.',
   },
   {
-    title: 'Follow-up leakage',
-    body: 'Qualified opportunities go quiet after the call because nothing clear was agreed while you were still talking.',
+    title: 'Follow-ups that go quiet',
+    body: 'Qualified people drift away because nothing clear was agreed before the call ended.',
   },
 ];
 
@@ -60,13 +60,13 @@ export default async function HomePage() {
       <section className="hero" aria-labelledby="hero-title">
         <div className="container">
           <div>
-            <p className="eyebrow">{settings.founderTitle} · For coaches, consultants & agency owners</p>
+            <p className="eyebrow">{settings.founderTitle} · For coaches, consultants &amp; agency owners</p>
             <h1 id="hero-title">
               Make every qualified sales conversation <em>count.</em>
             </h1>
             <p className="lead">
-              Practical high-ticket sales coaching that gives you a clear structure for every call — so good prospects stop leaking at the
-              moment that matters, without becoming pushy.
+              Practical sales coaching that gives you a clear structure for every call, so good prospects stop slipping away at the moment
+              that matters. No pressure tactics.
             </p>
             <div className="btn-row">
               <TrackedLink href="/free-training" className="btn btn--primary btn--lg" cta="hero_primary" placement="hero">
@@ -76,7 +76,7 @@ export default async function HomePage() {
                 Explore Programs
               </TrackedLink>
             </div>
-            <p className="hero-note">Free · Watch instantly · No credit card</p>
+            <p className="hero-note">Free · Watch instantly · No card needed</p>
           </div>
           <Portrait portrait={settings.founder.portrait} name={settings.founderName} priority />
         </div>
@@ -134,7 +134,7 @@ export default async function HomePage() {
       <section className="section" aria-labelledby="fw-title">
         <div className="container">
           <SectionHead
-            eyebrow="The frameworks"
+            eyebrow="The method"
             title={<span id="fw-title">A structure you can run on every call</span>}
             lead="Three simple frameworks that move a conversation from intent, to certainty, to a clear decision."
           />
@@ -152,16 +152,16 @@ export default async function HomePage() {
       {/* 7. How Suraj helps */}
       <section className="section section--stone" aria-labelledby="help-title">
         <div className="container">
-          <SectionHead eyebrow="How Suraj helps" title={<span id="help-title">Learn the skill. Then install the system.</span>} />
+          <SectionHead eyebrow="How Suraj helps" title={<span id="help-title">Learn the skill. Then build the system.</span>} />
           <div className="split">
             <div className="card">
               <span className="icon-num">01</span>
               <h3>What you learn</h3>
               <ul className="check-list">
-                <li>How to open a call so the prospect knows exactly what it’s for</li>
-                <li>Discovery that uncovers the real cost of staying stuck</li>
-                <li>Presenting only what closes the gap — not your whole offer</li>
-                <li>Handling “I need to think about it” without pressure</li>
+                <li>How to open a call so both sides know what it’s for</li>
+                <li>Discovery that surfaces the real cost of staying stuck</li>
+                <li>Presenting only what solves their problem, not your whole offer</li>
+                <li>Handling hesitation without pushing</li>
               </ul>
             </div>
             <div className="card">
@@ -169,9 +169,9 @@ export default async function HomePage() {
               <h3>What we implement together</h3>
               <ul className="check-list">
                 <li>A call structure built around your offer and your buyers</li>
-                <li>Reviews of your real sales calls with specific feedback</li>
-                <li>A follow-up process that keeps qualified opportunities warm</li>
-                <li>Simple tracking so you know which stage is leaking</li>
+                <li>Reviews of your real sales calls, with specific feedback</li>
+                <li>A follow-up process that keeps qualified leads warm</li>
+                <li>Simple tracking that shows where deals are leaking</li>
               </ul>
             </div>
           </div>
@@ -193,7 +193,7 @@ export default async function HomePage() {
       {/* 9. Proof / stories */}
       <section className="section section--stone" aria-labelledby="proof-title">
         <div className="container">
-          <SectionHead eyebrow="Client stories" title={<span id="proof-title">Real conversations, real outcomes</span>} />
+          <SectionHead eyebrow="Client stories" title={<span id="proof-title">Client stories, told honestly</span>} />
           <ProofList testimonials={testimonials.slice(0, 3)} caseStudies={caseStudies.slice(0, 1)} ctaHref="/results" ctaLabel="See all results" />
         </div>
       </section>
@@ -224,7 +224,7 @@ export default async function HomePage() {
       {/* 12. Final CTA — one dominant action */}
       <FinalCta
         title="Start with the free training."
-        lead="Learn the structure behind a high-trust sales conversation — and see if this approach is right for you."
+        lead="See the structure behind a high-trust sales conversation, and decide if this approach is right for you."
         href="/free-training"
         label="Watch the Free Training"
         cta="home_final"

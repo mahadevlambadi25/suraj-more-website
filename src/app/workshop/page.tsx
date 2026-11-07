@@ -12,8 +12,9 @@ import { pageMeta, workshopSchemas } from '@/lib/seo';
 export const revalidate = 300;
 
 export const metadata = pageMeta({
-  title: 'The One Skill Workshop',
-  description: 'A two-day live Zoom workshop on leading sales conversations with certainty instead of pressure. For coaches, consultants and sales professionals.',
+  title: 'One Skill Workshop: Live Sales Training | Suraj More',
+  absoluteTitle: true,
+  description: 'A two-day live Zoom workshop on leading sales conversations with certainty instead of pressure. For coaches, consultants and closers.',
   path: '/workshop',
 });
 
@@ -31,17 +32,29 @@ export default async function WorkshopPage() {
       >
         {cohort ? (
           <>
-            <div className="btn-row" style={{ marginBottom: 28 }}>
+            <div className="btn-row" style={{ marginBottom: 12 }}>
               <TrackedLink href="#register" className="btn btn--primary btn--lg" cta="workshop_hero" placement="hero">
-                Reserve Workshop Seat · {formatInr(cohort.priceInr)} <ArrowRight />
+                Reserve Your Seat · {formatInr(cohort.priceInr)} <ArrowRight />
               </TrackedLink>
             </div>
+            {/* The anchor price is shown ONLY when marked as a verified real past price ([[CONFIRM: ₹999]]). */}
+            <p className="small" style={{ color: '#c4cbd5', marginBottom: 28 }}>
+              {cohort.compareAtPriceVerified && cohort.compareAtPriceInr ? (
+                <>
+                  <span className="compare" style={{ color: '#8e98a7' }}>Regular {formatInr(cohort.compareAtPriceInr)}</span>
+                  {formatInr(cohort.priceInr)}
+                </>
+              ) : (
+                formatInr(cohort.priceInr)
+              )}{' '}
+              · Live on Zoom
+            </p>
             <p className="small" style={{ color: '#8e98a7', marginBottom: 10 }}>Starts in</p>
             <Countdown to={cohort.startsAt} />
           </>
         ) : (
           <TrackedLink href="#waitlist" className="btn btn--primary btn--lg" cta="workshop_waitlist_hero" placement="hero">
-            Join the waitlist <ArrowRight />
+            Join the Waitlist <ArrowRight />
           </TrackedLink>
         )}
       </PageHero>
@@ -49,17 +62,15 @@ export default async function WorkshopPage() {
       <section className="section">
         <div className="container grid-12">
           <div style={{ gridColumn: 'span 7' }}>
-            <SectionHead eyebrow="What you’ll learn" title="One skill that moves the most conversations forward" />
+            <SectionHead eyebrow="The One Skill Workshop" title="What you’ll learn" />
             <ul className="check-list">
               {program.curriculum.map((c) => <li key={c}>{c}</li>)}
               <li>Language you can use on your very next sales call</li>
             </ul>
             <h3 style={{ marginTop: 40 }}>Who it’s for</h3>
-            <ul className="check-list">
-              {program.audience.map((a) => <li key={a}>{a}</li>)}
-            </ul>
+            <p>{program.audience.join(' · ')} who already have conversations but convert them inconsistently.</p>
             <h3 style={{ marginTop: 40 }}>Who it’s not for</h3>
-            <p>Anyone looking for manipulative scripts or a shortcut that promises guaranteed revenue. This is a skill, and it takes practice.</p>
+            <p>Anyone looking for manipulative scripts or guaranteed revenue. This is a skill, and it takes practice.</p>
 
             {cohort && (
               <>
@@ -94,7 +105,7 @@ export default async function WorkshopPage() {
                   <span className="tag tag--muted">Not currently open</span>
                   <h2 style={{ fontSize: '1.5rem', marginTop: 14 }}>Notify me about the next cohort</h2>
                   <p className="small">Dates for the next live workshop haven’t been announced yet. Join the waitlist and you’ll hear first.</p>
-                  <WaitlistForm programId="workshop" />
+                  <WaitlistForm programId="workshop" buttonLabel="Notify Me" />
                 </div>
               )}
             </div>
@@ -118,7 +129,7 @@ export default async function WorkshopPage() {
         </div>
       </section>
 
-      <MobileStickyCta label={cohort ? `Reserve Workshop Seat · ${formatInr(cohort.priceInr)}` : 'Join the waitlist'} href={cohort ? '#register' : '#waitlist'} />
+      <MobileStickyCta label={cohort ? `Reserve Your Seat · ${formatInr(cohort.priceInr)}` : 'Join the Waitlist'} href={cohort ? '#register' : '#waitlist'} />
     </>
   );
 }

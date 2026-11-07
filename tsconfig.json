@@ -35,11 +35,12 @@
     ".next-before/types/**/*.ts",
     ".next-neon/types/**/*.ts",
     ".next-prod/types/**/*.ts",
+    ".next-review/types/**/*.ts",
     ".next-ui/types/**/*.ts",
     ".next-verify/types/**/*.ts",
     ".next/types/**/*.ts",
     "next-env.d.ts",
-    ".next-review/types/**/*.ts"
+    ".next-copy/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

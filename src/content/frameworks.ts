@@ -1,13 +1,13 @@
 import type { Framework } from '@/lib/types';
 
-// TODO: framework names, spellings and step wording must be approved by Suraj (brief §7).
+// [[CONFIRM with Suraj: framework names, spellings and step wording]] (brief §7).
+// Taglines + descriptions follow the approved copy document; step bodies are pending Suraj's review.
 export const frameworks: Framework[] = [
   {
     id: 'sales-arm',
     name: 'Sales Arm Framework',
-    tagline: 'The structure of the whole conversation',
-    description:
-      'A sales conversation has a shape. The Sales Arm gives every call the same backbone, so you always know where you are and what earns the next step.',
+    tagline: 'The shape of the whole conversation',
+    description: 'Every call follows the same backbone, so you always know where you are and what earns the next step.',
     steps: [
       { title: 'Open', body: 'Set the frame, agree the agenda and the decision this call is for.' },
       { title: 'Discover', body: 'Understand where they are, where they want to be and what it costs to stay.' },
@@ -21,8 +21,7 @@ export const frameworks: Framework[] = [
     id: 'doctor-frame',
     name: 'Doctor Frame',
     tagline: 'Diagnose before you prescribe',
-    description:
-      'A good doctor never prescribes before examining. The Doctor Frame positions you as the expert who earns trust through better questions, not louder claims.',
+    description: 'Trust is earned through better questions, not louder claims.',
     steps: [
       { title: 'Examine', body: 'Ask precise questions about the situation, not the solution.' },
       { title: 'Reflect', body: 'Play back what you heard so they feel understood.' },
@@ -34,9 +33,8 @@ export const frameworks: Framework[] = [
   {
     id: 'c3-certainty',
     name: 'C3 Certainty Reframe',
-    tagline: 'When they say “I need to think about it”',
-    description:
-      'Hesitation is usually missing certainty, not missing interest. C3 helps you find which certainty is missing and address it without pressure.',
+    tagline: 'When they say “I need to think about it.”',
+    description: 'Hesitation is usually missing certainty, not missing interest. Find which certainty is missing and address it without pressure.',
     steps: [
       { title: 'Clarify', body: 'Find out what exactly they need to think about.' },
       { title: 'Confirm', body: 'Check certainty in the problem, the solution and themselves.' },

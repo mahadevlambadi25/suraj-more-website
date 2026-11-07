@@ -529,6 +529,8 @@ export async function getOrderStatus(orderNumber: string, claimPurchaseEvent: bo
     firstName: order.customerName.split(' ')[0],
     email: order.customerEmail.replace(/^(.{2}).*(@.*)$/, '$1•••$2'),
     cohort: { id: order.cohort.id, title: order.cohort.title, timezone: order.cohort.timezone, sessions: sessions.success ? sessions.data : [] },
+    // Read-only delivery facts so the page never claims a message was sent when it wasn't.
+    delivery: { confirmation: !!order.confirmationSentAt, joinDetails: !!order.zoomSentAt },
     firePurchase,
   };
 }

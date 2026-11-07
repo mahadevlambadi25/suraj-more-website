@@ -43,8 +43,8 @@ export async function getPrograms(): Promise<Program[]> {
   return programs.map((p) => {
     if (p.id !== 'workshop') return p;
     return cohort
-      ? { ...p, status: 'open' as const, priceLabel: formatInr(cohort.priceInr), cta: { label: 'Reserve Workshop Seat', href: '/workshop' } }
-      : { ...p, status: 'waitlist' as const, priceLabel: null, cta: { label: 'Join the waitlist', href: '/workshop#waitlist' } };
+      ? { ...p, status: 'open' as const, priceLabel: formatInr(cohort.priceInr), cta: { label: 'Explore the Workshop', href: '/workshop' } }
+      : { ...p, status: 'waitlist' as const, priceLabel: null, cta: { label: 'Join the Waitlist', href: '/workshop#waitlist' } };
   });
 }
 

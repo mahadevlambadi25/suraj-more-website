@@ -98,14 +98,15 @@ export function MentorshipForm() {
     return (
       <div className="status-card" role="status">
         <div className="status-icon status-icon--success"><Check /></div>
-        <h3>Application received — thank you, {v.name.split(' ')[0]}.</h3>
-        <p>We read every application personally. Here is what happens next:</p>
+        <h3>Application received. Thank you, {v.name.split(' ')[0]}.</h3>
+        {/* No "confirmation email shortly" promise: it is only true once an email provider is configured.
+            [[CONFIRM: review time]] — no response-time promise until Suraj confirms it. */}
+        <p>Every application is read personally. Here is what happens next:</p>
         <ol className="next-steps">
-          <li><span>You’ll get a confirmation email at <strong>{v.email}</strong> in the next few minutes.</span></li>
-          <li><span>We review your application within 2 business days.</span></li>
-          <li><span>If it looks like a genuine fit, you’ll receive a private link to book a conversation at a time that suits you ({v.timezone}).</span></li>
+          <li><span>Your answers have been saved and will be reviewed by Suraj’s team.</span></li>
+          <li><span>If it looks like a genuine fit, you’ll receive a private link at <strong>{v.email}</strong> to book a conversation at a time that suits you ({v.timezone}).</span></li>
         </ol>
-        <p className="small">If it isn’t a fit right now, we’ll tell you honestly and point you to the best next step.</p>
+        <p className="small">If it isn’t the right time, we’ll tell you honestly.</p>
       </div>
     );
   }
@@ -151,7 +152,7 @@ export function MentorshipForm() {
         <>
           <TextAreaField id="offer" label="What do you sell, and to whom?" hint="Your main offer, who it is for and roughly what it costs." value={v.offer} error={f.errors.offer}
             onChange={(e) => f.set('offer', e.target.value)} onBlur={() => f.validateField(mentorshipStepSchemas[1], 'offer')} />
-          <TextAreaField id="salesChallenge" label="What is your biggest sales challenge right now?" value={v.salesChallenge} error={f.errors.salesChallenge}
+          <TextAreaField id="salesChallenge" label="What’s your biggest sales challenge right now?" value={v.salesChallenge} error={f.errors.salesChallenge}
             onChange={(e) => f.set('salesChallenge', e.target.value)} onBlur={() => f.validateField(mentorshipStepSchemas[1], 'salesChallenge')} />
           {COLLECT_REVENUE_RANGE && (
             <SelectField id="revenueRange" label="Current monthly revenue" optional options={REVENUE_RANGES.map((r) => ({ value: r, label: r }))}

@@ -6,8 +6,9 @@ import { getProgram } from '@/lib/cms';
 import { pageMeta } from '@/lib/seo';
 
 export const metadata = pageMeta({
-  title: 'Level Zero — Free Course & Community',
-  description: 'Level Zero is Suraj More’s free course and community on Whop: the foundations of a structured, high-trust sales conversation.',
+  title: 'Level Zero: Free Sales Course & Community | Suraj More',
+  absoluteTitle: true,
+  description: 'A free course and community on the foundations of a structured, high-trust sales conversation. Join free on Whop.',
   path: '/level-zero',
 });
 
@@ -30,7 +31,7 @@ export default async function LevelZeroPage() {
       <section className="section">
         <div className="container split">
           <div>
-            <SectionHead eyebrow="Inside Level Zero" title="The foundations, before you invest in anything" />
+            <SectionHead eyebrow="Level Zero" title="Inside Level Zero" />
             <ul className="check-list">
               {program.curriculum.map((c) => <li key={c}>{c}</li>)}
             </ul>
@@ -49,12 +50,12 @@ export default async function LevelZeroPage() {
 
       <section className="section section--stone">
         <div className="container">
-          <SectionHead eyebrow="How it works" title="Three steps" />
+          <SectionHead title="How it works" />
           <div className="cards cards--3">
             {[
-              ['Join on Whop', 'Create a free Whop account — it takes about a minute.'],
-              ['Work through the lessons', 'Short, practical lessons you can apply on your next call.'],
-              ['Ask in the community', 'Share real situations and learn from others doing the same work.'],
+              ['Join on Whop', 'Create your free account. It takes about a minute.'],
+              ['Work through the lessons', 'Short, practical lessons you can use on your next call.'],
+              ['Ask questions in the community', 'Bring real situations and learn alongside others doing the same work.'],
             ].map(([t, b], i) => (
               <article key={t} className="card">
                 <span className="icon-num">{i + 1}</span>

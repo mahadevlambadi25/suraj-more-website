@@ -7,8 +7,9 @@ import { getFaqs, getProgram, getPublishedCaseStudies, getPublishedTestimonials 
 import { pageMeta } from '@/lib/seo';
 
 export const metadata = pageMeta({
-  title: 'Premium Mentorship',
-  description: 'Application-only private mentorship for consultants, coaches and agency owners who need a structured, repeatable sales process around a proven offer.',
+  title: 'Premium Sales Mentorship | Suraj More',
+  absoluteTitle: true,
+  description: 'Application-only private mentorship for consultants, coaches and agency owners who need a repeatable sales process.',
   path: '/mentorship',
 });
 
@@ -26,16 +27,14 @@ export default async function MentorshipPage() {
       <section className="section">
         <div className="container split">
           <div>
-            <SectionHead eyebrow="Who it’s for" title="Selective by design" />
+            <SectionHead title="Who it’s for" />
             <ul className="check-list">
               {program.audience.map((a) => <li key={a}>{a}</li>)}
-              <li>You already have demand — qualified people are getting on calls</li>
-              <li>You’re willing to have your real calls reviewed and to practise</li>
             </ul>
             <h3 style={{ marginTop: 32 }}>Not a fit if</h3>
             <ul className="check-list">
               <li>You don’t yet have a validated offer</li>
-              <li>You’re looking for guaranteed revenue or a shortcut</li>
+              <li>You’re looking for a shortcut or guaranteed revenue</li>
             </ul>
           </div>
           <div className="card">
@@ -44,7 +43,7 @@ export default async function MentorshipPage() {
               {program.curriculum.map((c) => <li key={c}>{c}</li>)}
             </ul>
             <p className="small" style={{ margin: 0 }}>
-              Duration, format and investment are shared after your application is reviewed — only if it looks like a genuine fit.
+              Duration, format and investment are shared after your application is reviewed, and only if it looks like a genuine fit.
             </p>
           </div>
         </div>
@@ -52,13 +51,14 @@ export default async function MentorshipPage() {
 
       <section className="section section--stone">
         <div className="container">
-          <SectionHead eyebrow="The process" title="How applying works" />
+          <SectionHead title="How applying works" />
           <div className="cards">
             {[
-              ['Apply', 'Answer a few questions about your offer and where sales conversations break down. About 5 minutes.'],
-              ['Review', 'Suraj’s team reviews every application personally within 2 business days.'],
-              ['Conversation', 'If it looks like a fit, you get a private link to book a call at a time that suits your timezone.'],
-              ['Decide', 'You get a clear recommendation — including if mentorship isn’t the right step yet.'],
+              ['Apply', 'A few questions about your offer and where calls break down. About 5 minutes.'],
+              // [[CONFIRM: review time, e.g. "within 2 business days"]] — no response-time promise until Suraj confirms it.
+              ['Review', 'Every application is read personally.'],
+              ['Conversation', 'If it’s a fit, you get a private link to book a call at a time that suits you.'],
+              ['Decision', 'You get a clear recommendation, including when mentorship isn’t the right step yet.'],
             ].map(([t, b], i) => (
               <article key={t} className="card">
                 <span className="icon-num">{i + 1}</span>
@@ -72,7 +72,7 @@ export default async function MentorshipPage() {
 
       <section className="section" id="apply">
         <div className="container container--narrow">
-          <SectionHead eyebrow="Apply" title="Apply for Mentorship" lead="Tell us about your business. There are no wrong answers — honesty helps us tell you whether this is the right fit." />
+          <SectionHead eyebrow="Apply" title="Apply for Mentorship" lead="Tell us about your business. There are no wrong answers. Honesty helps us tell you whether this is the right fit." />
           <div className="form-card">
             <MentorshipForm />
           </div>

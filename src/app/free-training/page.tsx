@@ -4,8 +4,9 @@ import { getFrameworks, getSettings } from '@/lib/cms';
 import { pageMeta } from '@/lib/seo';
 
 export const metadata = pageMeta({
-  title: 'Free Training',
-  description: 'Watch Suraj More’s free training on how to lead a high-trust, high-ticket sales conversation — without pressure.',
+  title: 'Free Sales Training | Suraj More',
+  absoluteTitle: true,
+  description: 'Watch the free training on leading high-trust sales calls, with the three frameworks Suraj uses. Instant access.',
   path: '/free-training',
 });
 
@@ -19,13 +20,14 @@ export default async function FreeTrainingPage() {
             <p className="eyebrow">Free training · Watch instantly</p>
             <h1>{settings.freeTraining.headline}</h1>
             <p className="lead">
-              The structure behind a sales conversation that ends in a clear decision — and the three frameworks Suraj teaches to coaches,
-              consultants and agency owners.
+              The structure behind a call that ends in a clear decision, plus the three frameworks Suraj teaches coaches, consultants and
+              agency owners.
             </p>
+            <p className="small" style={{ color: '#8e98a7', marginBottom: 8 }}>You’ll learn</p>
             <ul className="check-list" style={{ color: '#c4cbd5' }}>
-              <li>Why qualified prospects say “I need to think about it” — and what to do instead</li>
+              <li>Why qualified prospects say “I need to think about it,” and what to do instead</li>
               <li>How to diagnose before you prescribe, using the Doctor Frame</li>
-              <li>The Intent → Certainty → Close flow you can use on your next call</li>
+              <li>The Intent → Certainty → Close flow for your next call</li>
             </ul>
           </div>
           <div className="form-card" id="access">

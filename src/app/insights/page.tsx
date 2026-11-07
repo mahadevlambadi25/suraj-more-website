@@ -4,8 +4,9 @@ import { getArticles } from '@/lib/cms';
 import { pageMeta } from '@/lib/seo';
 
 export const metadata = pageMeta({
-  title: 'Insights',
-  description: 'Articles, videos and frameworks on leading better high-ticket sales conversations.',
+  title: 'Sales Conversation Insights | Suraj More',
+  absoluteTitle: true,
+  description: 'Practical articles and frameworks on discovery, objections, follow-up and closing.',
   path: '/insights',
 });
 
@@ -21,7 +22,7 @@ export default async function InsightsPage() {
           {articles.length === 0 ? (
             <div className="empty-state">
               <h2 style={{ fontSize: '1.4rem' }}>First articles coming soon</h2>
-              <p>In the meantime, the free training covers the core frameworks.</p>
+              <p>Meanwhile, the free training covers the core frameworks.</p>
               <Link href="/free-training" className="btn btn--secondary">Watch the Free Training</Link>
             </div>
           ) : (

@@ -84,7 +84,7 @@ export function Footer({ settings }: { settings: SiteSettings }) {
           </nav>
         </div>
         <p className="disclaimer" style={{ color: '#7d8796' }}>
-          Results vary. Nothing on this website is a promise or guarantee of income, revenue or conversion rates.
+          Results vary. Nothing on this website promises income, revenue or conversion rates.
         </p>
       </div>
     </footer>

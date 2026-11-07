@@ -1,13 +1,15 @@
 import type { Program } from '@/lib/types';
 
 // Offer ladder (brief §2). Workshop price/status is overridden at runtime by the active cohort.
+// `summary` = page hero line · `ladderSummary` = short line on the offer-ladder cards (approved copy).
 export const programs: Program[] = [
   {
     id: 'level-zero',
     title: 'Level Zero',
     tierLabel: 'Free · Start here',
-    summary:
-      'A free course and community on Whop that gives you the foundations of a structured sales conversation before you invest in anything.',
+    // [[CONFIRM: what Level Zero actually includes — the brief calls its role unclear]]
+    summary: 'A free course and community covering the foundations of a structured sales conversation, before you invest in anything.',
+    ladderSummary: 'The foundations of a structured sales conversation, in a free course and community.',
     audience: ['Coaches early in their sales journey', 'Sales professionals and closers', 'Anyone exploring Suraj’s approach'],
     format: 'Self-paced course + community (hosted on Whop)',
     curriculum: [
@@ -23,13 +25,13 @@ export const programs: Program[] = [
     id: 'workshop',
     title: 'The One Skill Workshop',
     tierLabel: 'Live workshop',
-    summary:
-      'A two-day live Zoom workshop on the one skill that moves the most sales conversations forward — leading the call with certainty instead of pressure.',
-    audience: ['Coaches (health, fitness, mindset and more)', 'Consultants', 'Sales professionals'],
+    summary: 'Two live days on the one skill that moves the most sales conversations forward: leading the call with certainty instead of pressure.',
+    ladderSummary: 'Two live days on Zoom, practising the one skill that moves the most conversations forward.',
+    audience: ['Coaches', 'Consultants', 'Sales professionals'],
     format: '2-day live workshop on Zoom',
     curriculum: [
-      'Day 1 — Intent: discovery that earns the right to make an offer',
-      'Day 2 — Certainty → Close: handling hesitation without pushing',
+      'Day 1, Intent: discovery that earns you the right to make an offer',
+      'Day 2, Certainty → Close: handling hesitation without pushing',
       'Live role-play and Q&A',
     ],
     priceLabel: null, // set from the active cohort
@@ -40,12 +42,16 @@ export const programs: Program[] = [
     id: 'mentorship',
     title: 'Premium Mentorship',
     tierLabel: 'Application only',
-    summary:
-      'Private advisory for consultants, coaches and agency owners with a proven offer who need a structured, repeatable sales process around it.',
-    audience: ['Consultants and agency owners', 'Established coaches with a high-ticket offer'],
+    summary: 'For consultants, coaches and agency owners with a proven offer who need a structured, repeatable sales process around it.',
+    ladderSummary: 'Private advisory for established offers that need a repeatable sales process.',
+    audience: [
+      'You already have demand: qualified people are getting on calls',
+      'You’re willing to have your real calls reviewed, and to practise',
+      'Consultants, agency owners and established coaches with a high-ticket offer',
+    ],
     format: 'Private mentorship — details shared after application',
     curriculum: [
-      'Audit of your current sales conversations',
+      'An audit of your current sales conversations',
       'Installing the Sales Arm Framework in your calls',
       'Follow-up and pipeline structure',
     ],
@@ -57,7 +63,7 @@ export const programs: Program[] = [
     id: 'inner-circle',
     title: 'VIP Advisory / Inner Circle',
     tierLabel: 'Advanced',
-    summary: 'An advanced continuity tier for past mentorship clients. Details will be shared once confirmed.',
+    summary: 'Coming soon. Details will be shared once confirmed.',
     audience: ['Past mentorship clients'],
     format: 'To be announced',
     curriculum: [],

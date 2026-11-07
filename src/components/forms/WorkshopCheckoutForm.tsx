@@ -135,7 +135,7 @@ export function WorkshopCheckoutForm({ cohort }: { cohort: CheckoutCohort }) {
 
       <CheckboxField id="termsAccepted" checked={v.termsAccepted} onChange={(c) => f.set('termsAccepted', c)} error={f.errors.termsAccepted}>
         I agree to the <Link href="/terms-and-conditions" target="_blank">Terms</Link> and{' '}
-        <Link href="/refund-policy" target="_blank">Refund Policy</Link>. My details will be used to deliver this workshop (confirmation, Zoom link and reminders).
+        <Link href="/refund-policy" target="_blank">Refund Policy</Link>. My details will be used to deliver this workshop.
       </CheckboxField>
       <CheckboxField id="marketingConsent" checked={v.marketingConsent} onChange={(c) => f.set('marketingConsent', c)}>
         {CONSENT_WORDING.marketing} <span className="muted">(optional)</span>

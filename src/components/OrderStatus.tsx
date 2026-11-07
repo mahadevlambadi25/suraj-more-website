@@ -16,6 +16,7 @@ type Status = {
   firstName: string;
   email: string;
   cohort: { id: string; title: string; timezone: string; sessions: { label: string; startsAt: string; endsAt: string; topic: string }[] } | null;
+  delivery?: { confirmation: boolean; joinDetails: boolean };
   firePurchase: boolean;
 };
 
@@ -107,9 +108,9 @@ export function OrderStatus({ orderId, supportEmail, whatsappHref }: { orderId: 
       <div className="status-card" role="status">
         <div className="status-icon status-icon--error"><Cross /></div>
         <h1 style={{ fontSize: '2rem' }}>{data.status === 'dropped' ? 'Payment was not completed' : 'Payment didn’t go through'}</h1>
-        <p>No money has been taken for this attempt. If your account was debited, it will be reversed automatically by your bank.</p>
+        <p>No money was taken for this attempt. If your account was debited, it will be reversed automatically by your bank.</p>
         <div className="btn-row" style={{ justifyContent: 'center', margin: '24px 0' }}>
-          <Link href="/workshop#register" className="btn btn--primary">Try again</Link>
+          <Link href="/workshop#register" className="btn btn--primary">Try Again</Link>
         </div>
         {support}
       </div>
@@ -145,7 +146,16 @@ export function OrderStatus({ orderId, supportEmail, whatsappHref }: { orderId: 
       <div className="status-icon status-icon--success"><Check /></div>
       <p className="eyebrow" style={{ justifyContent: 'center' }}>Seat confirmed</p>
       <h1 style={{ fontSize: 'clamp(2rem,4vw,2.6rem)' }}>You’re in, {data.firstName}.</h1>
-      <p>Payment of <strong>{formatInr(data.amountInr)}</strong> received. Order reference: <strong>{data.orderId}</strong></p>
+      <p>
+        Payment of <strong>{formatInr(data.amountInr)}</strong> received.{' '}
+        {/* Only claim delivery when the provider actually accepted both messages. */}
+        {data.delivery?.confirmation && data.delivery?.joinDetails ? (
+          <>Your confirmation and Zoom link are on their way to <strong>{data.email}</strong>.</>
+        ) : (
+          <>Your confirmation and Zoom link will be sent to <strong>{data.email}</strong> before the workshop.</>
+        )}
+      </p>
+      <p className="small">Order reference: <strong>{data.orderId}</strong></p>
 
       {c && (
         <div className="card card--flat" style={{ textAlign: 'left', margin: '28px 0' }}>
@@ -162,8 +172,13 @@ export function OrderStatus({ orderId, supportEmail, whatsappHref }: { orderId: 
       )}
 
       <ol className="next-steps">
-        <li><span>Check <strong>{data.email}</strong> for your confirmation and Zoom link (also check Promotions/Spam).</span></li>
-        <li><span>We’ll also send the link and reminders on WhatsApp before each session.</span></li>
+        <li>
+          <span>
+            {data.delivery?.confirmation && data.delivery?.joinDetails
+              ? <>Check <strong>{data.email}</strong> for your confirmation and Zoom link (also check Promotions/Spam).</>
+              : <>If you haven’t received your Zoom link 24 hours before the first session, contact us with your order reference.</>}
+          </span>
+        </li>
         <li><span>Add both sessions to your calendar and join 5 minutes early from a laptop if you can.</span></li>
       </ol>
       {support}
