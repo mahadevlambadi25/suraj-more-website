@@ -1,4 +1,4 @@
-import { listAdmins, listAuditLog } from '@/lib/admin/queries';
+import { listAdmins } from '@/lib/admin/queries';
 import { hasRole } from '@/lib/auth/session';
 import { requireAdmin } from '@/lib/auth/guards';
 import { env } from '@/lib/env';
@@ -13,7 +13,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: SP 
   const admin = await requireAdmin('VIEWER');
   const sp = await searchParams;
   const isOwner = hasRole(admin, 'OWNER');
-  const [settings, bookingUrl, admins, log] = await Promise.all([getMergedSettings(), getMentorshipBookingUrl(), listAdmins(), listAuditLog(40)]);
+  const [settings, bookingUrl, admins] = await Promise.all([getMergedSettings(), getMentorshipBookingUrl(), listAdmins()]);
   const current: Record<string, string> = {
     contactEmail: settings.contact.email,
     whatsappNumber: settings.contact.whatsappNumber,
@@ -34,7 +34,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: SP 
 
   return (
     <>
-      <PageHeader title="Settings" description="Site contact details, integration status, admin accounts and the audit trail." />
+      <PageHeader title="Settings" description="Site contact details, integration status and admin accounts." />
       <Flash msg={sp.msg} err={sp.err} />
 
       <div className="o-grid-main">
@@ -83,24 +83,6 @@ export default async function SettingsPage({ searchParams }: { searchParams: SP 
                           </div>
                         )}
                       </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </Card>
-
-          <Card title="Audit log" description="Sign-ins and every privileged action (latest 40)" flush>
-            <div className="o-table-wrap">
-              <table className="o-table">
-                <thead><tr><th>Action</th><th className="o-hide-sm">Admin</th><th className="o-hide-sm">Details</th><th>When</th></tr></thead>
-                <tbody>
-                  {log.map((l) => (
-                    <tr key={l.id}>
-                      <td><span className="o-mono">{l.action}</span>{l.entityType && <span className="o-cell-sub">{l.entityType} {l.entityId?.slice(0, 8) ?? ''}</span>}</td>
-                      <td className="o-hide-sm">{l.admin?.name ?? <span className="o-muted">System</span>}</td>
-                      <td className="o-hide-sm o-small" style={{ maxWidth: 340, wordBreak: 'break-word' }}>{l.metadata ? JSON.stringify(l.metadata).slice(0, 160) : '—'}</td>
-                      <td className="o-nowrap">{fmtDate(l.createdAt)}</td>
                     </tr>
                   ))}
                 </tbody>

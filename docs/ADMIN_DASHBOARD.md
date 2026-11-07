@@ -36,7 +36,7 @@ Sessions: HttpOnly, `Secure`, `SameSite=Strict` cookie (`__Host-` prefixed in pr
 | **Webhooks** `/ops/webhooks` | Every event with id, type, provider, signature check, status, attempts, error and linked order. **Retry** re-processes a FAILED event from its stored payload. It is idempotent and audited. |
 | **Refunds** `/ops/refunds` | All refunds with amount, status, Cashfree reference, who requested and why. *Sync status* pulls the current state from Cashfree. |
 | **Mentorship** `/ops/applications` | Filter by status; full answers; accept (requires a booking link and emails it) or reject, with an internal note. Each application can be decided only once. Shows honestly whether the email was delivered. |
-| **Settings** `/ops/settings` | Owner-editable: support email, WhatsApp number, Whop URL, mentorship booking link. Read-only integration status (never shows secrets), the webhook URL to register, admins and the audit log. |
+| **Settings** `/ops/settings` | Owner-editable: support email, WhatsApp number, Whop URL, mentorship booking link. Read-only integration status (never shows secrets), the webhook URL to register, and admin accounts. (Privileged actions are still recorded in the `AuditLog` table; it is no longer listed on this page.) |
 
 ## Operations runbook
 
