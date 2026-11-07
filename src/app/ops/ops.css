@@ -319,6 +319,15 @@
 .o-decision-actions .o-btn { height: 42px; }
 .o-decision-hint { margin: 6px 0 0; font-size: 12.5px; color: var(--o-text-3); }
 .o-view-btn { white-space: nowrap; }
+.o-cell-meta { margin-top: 6px; font-size: 12.5px; color: var(--o-text-3); line-height: 1.9; }
+.o-cell-meta > * + * { margin-left: 8px; }
+.o-break { overflow-wrap: anywhere; }
+/* List tables switch to a compact layout below 1280px: secondary columns hide, key facts move under the name. */
+.o-show-md { display: none !important; }
+@media (max-width: 1279px) {
+  .o-hide-md { display: none; }
+  .o-show-md { display: block !important; }
+}
 .o-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .o-dialog h2 { font-size: 16px; font-weight: 600; margin: 0 0 6px; }
 .o-dialog p { color: var(--o-text-2); margin: 0; line-height: 1.5; }

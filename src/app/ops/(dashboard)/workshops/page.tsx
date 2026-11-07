@@ -29,7 +29,7 @@ export default async function WorkshopsPage({ searchParams }: { searchParams: SP
           <div className="o-table-wrap">
             <table className="o-table">
               <thead>
-                <tr><th>Cohort</th><th>Starts (IST)</th><th>Status</th><th className="o-hide-sm">Bookable</th><th className="o-num">Price</th><th className="o-num">Seats</th><th className="o-hide-sm">Zoom link</th></tr>
+                <tr><th>Cohort</th><th className="o-hide-md">Starts (IST)</th><th className="o-hide-md">Status</th><th className="o-hide-md">Bookable</th><th className="o-num o-hide-md">Price</th><th className="o-num o-hide-sm">Seats</th><th className="o-hide-sm">Zoom link</th><th className="o-num"><span className="o-sr-only">Actions</span></th></tr>
               </thead>
               <tbody>
                 {cohorts.map((c) => {
@@ -39,13 +39,22 @@ export default async function WorkshopsPage({ searchParams }: { searchParams: SP
                       <td>
                         <Link href={`/ops/workshops/${c.id}`} className="o-row-link">{c.title}</Link>
                         <span className="o-cell-sub"><span className="o-mono">{c.slug}</span>{c.isSample && <> · <Badge tone="warn">sample</Badge></>}</span>
+                        <span className="o-show-md o-cell-meta">
+                          <Badge value={c.status}>{c.status}</Badge>
+                          <span>{fmtDate(c.startsAt)} · {money(c.pricePaise)}{c.vipAddonActive && ` + ${money(c.vipAddonPricePaise)} VIP`}</span>
+                        </span>
                       </td>
-                      <td className="o-nowrap">{fmtDate(c.startsAt)}</td>
-                      <td><Badge value={c.status} /></td>
-                      <td className="o-hide-sm"><Badge tone={bookable ? 'ok' : 'muted'}>{bookable ? 'yes' : 'no'}</Badge></td>
-                      <td className="o-num">{money(c.pricePaise)}{c.vipAddonActive && <span className="o-cell-sub">+ {money(c.vipAddonPricePaise)} VIP</span>}</td>
-                      <td className="o-num">{c.confirmed}{c.seatLimit ? <span className="o-muted"> / {c.seatLimit}</span> : ''}</td>
+                      <td className="o-nowrap o-hide-md">{fmtDate(c.startsAt)}</td>
+                      <td className="o-hide-md"><Badge value={c.status}>{c.status}</Badge></td>
+                      <td className="o-hide-md"><Badge tone={bookable ? 'ok' : 'muted'}>{bookable ? 'yes' : 'no'}</Badge></td>
+                      <td className="o-num o-hide-md">{money(c.pricePaise)}{c.vipAddonActive && <span className="o-cell-sub">+ {money(c.vipAddonPricePaise)} VIP</span>}</td>
+                      <td className="o-num o-hide-sm">{c.confirmed}{c.seatLimit ? <span className="o-muted"> / {c.seatLimit}</span> : ''}</td>
                       <td className="o-hide-sm">{c.zoomJoinUrl ? <Badge tone="ok">set</Badge> : <Badge tone="bad">missing</Badge>}</td>
+                      <td className="o-num">
+                        <Link href={`/ops/workshops/${c.id}`} className="o-btn o-btn--secondary o-btn--sm o-view-btn" aria-label={`${canEdit ? 'Manage' : 'View'} workshop ${c.title}`}>
+                          {canEdit ? 'Manage Workshop' : 'View Workshop'} <span aria-hidden="true">→</span>
+                        </Link>
+                      </td>
                     </tr>
                   );
                 })}

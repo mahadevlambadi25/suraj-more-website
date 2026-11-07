@@ -63,17 +63,26 @@ export default async function LeadsPage({ searchParams }: { searchParams: SP }) 
           <div className="o-table-wrap">
             <table className="o-table">
               <thead>
-                <tr><th>Name</th><th className="o-hide-sm">Contact</th><th>Source</th><th>Status</th><th className="o-hide-sm">Campaign</th><th className="o-hide-sm">Created</th></tr>
+                <tr><th>Name</th><th className="o-hide-sm">Contact</th><th className="o-hide-md">Source</th><th className="o-hide-md">Status</th><th className="o-hide-md">Campaign</th><th className="o-hide-sm">Created</th><th className="o-num"><span className="o-sr-only">Actions</span></th></tr>
               </thead>
               <tbody>
                 {rows.map((l) => (
                   <tr key={l.id}>
-                    <td><Link href={`/ops/leads/${l.id}`} className="o-row-link">{l.name}</Link><span className="o-cell-sub o-show-sm">{l.email}</span></td>
-                    <td className="o-hide-sm">{l.email}<span className="o-cell-sub">{l.phone ?? 'No phone'}</span></td>
-                    <td style={{ textTransform: 'capitalize' }}>{label(l.source)}</td>
-                    <td><Badge value={l.status} /></td>
-                    <td className="o-hide-sm o-small">{[l.utmSource, l.utmMedium, l.utmCampaign].filter(Boolean).join(' / ') || <span className="o-muted">Direct</span>}</td>
+                    <td>
+                      <Link href={`/ops/leads/${l.id}`} className="o-row-link">{l.name}</Link>
+                      <span className="o-cell-sub o-show-sm o-break">{l.email}</span>
+                      <span className="o-show-md o-cell-meta"><Badge value={l.status}>{l.status}</Badge><span>{label(l.source).replace(/\b\w/g, (ch) => ch.toUpperCase())}</span></span>
+                    </td>
+                    <td className="o-hide-sm o-break">{l.email}<span className="o-cell-sub">{l.phone ?? 'No phone'}</span></td>
+                    <td className="o-hide-md" style={{ textTransform: 'capitalize' }}>{label(l.source)}</td>
+                    <td className="o-hide-md"><Badge value={l.status}>{l.status}</Badge></td>
+                    <td className="o-hide-md o-small">{[l.utmSource, l.utmMedium, l.utmCampaign].filter(Boolean).join(' / ') || <span className="o-muted">Direct</span>}</td>
                     <td className="o-hide-sm o-nowrap">{fmtDate(l.createdAt)}</td>
+                    <td className="o-num">
+                      <Link href={`/ops/leads/${l.id}`} className="o-btn o-btn--secondary o-btn--sm o-view-btn" aria-label={`View details for ${l.name}`}>
+                        View Details <span aria-hidden="true">→</span>
+                      </Link>
+                    </td>
                   </tr>
                 ))}
               </tbody>
