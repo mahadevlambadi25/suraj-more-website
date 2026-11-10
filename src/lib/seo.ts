@@ -22,7 +22,8 @@ export function pageMeta(opts: { title: string; description: string; path: strin
   };
 }
 
-export function personSchema() {
+/** PRD §12.2: profile URLs come from the admin-set social links (pass the merged settings' socials). */
+export function personSchema(socials: { href: string }[] = settings.socials) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Person',
@@ -31,7 +32,7 @@ export function personSchema() {
     url: siteUrl,
     description: settings.positioningLine,
     ...(settings.founder.portrait ? { image: `${siteUrl}${settings.founder.portrait.src}` } : {}),
-    sameAs: settings.socials.map((s) => s.href),
+    sameAs: socials.map((s) => s.href),
   };
 }
 

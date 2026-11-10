@@ -9,8 +9,9 @@ import { programs } from '@/content/programs';
 import { caseStudies, testimonials, trustPoints } from '@/content/proof';
 import { findActiveCohortRow, findCohortRow, findCohortRowBySlug, findOpenCohortRows, hideSamples, isCohortPurchasable, seatsTaken, toCohort, toPublicCohort } from './cohorts';
 import { formatInr } from './format';
-import { getMergedSettings } from './settings';
-import type { Cohort, CohortPageState, LegalDoc, ListedCohort, Program, ProgramId, PublicCohort } from './types';
+import { prisma } from './db';
+import { getMergedSettings, videoFromUrl } from './settings';
+import type { CaseStudy, Cohort, CohortPageState, LegalDoc, ListedCohort, Program, ProgramId, PublicCohort, Testimonial } from './types';
 
 export { isCohortPurchasable } from './cohorts';
 
@@ -92,13 +93,60 @@ export async function getFaqs() {
   return faqs;
 }
 
-export async function getPublishedTestimonials() {
-  return testimonials.filter((t) => t.status === 'published' && t.permissionOnFile);
+// Proof is managed in /ops → Proof (PRD §11.2 / §11.5). Only PUBLISHED items with permission on file are public;
+// the content file stays as a fallback (and the database being unreachable never breaks the page).
+export async function getPublishedTestimonials(): Promise<Testimonial[]> {
+  const fromFile = testimonials.filter((t) => t.status === 'published' && t.permissionOnFile);
+  try {
+    const rows = await prisma.testimonial.findMany({ where: { status: 'PUBLISHED', permissionOnFile: true }, orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }] });
+    return [
+      ...rows.map((r) => ({
+        id: r.id,
+        client: r.client,
+        role: r.role,
+        niche: r.niche,
+        ...(r.quote ? { quote: r.quote } : {}),
+        ...(r.videoUrl ? { video: videoFromUrl(r.videoUrl, `${r.client}: testimonial`) ?? undefined } : {}),
+        ...(r.verifiedOutcome ? { verifiedOutcome: r.verifiedOutcome } : {}),
+        permissionOnFile: true,
+        verification: VERIFICATION[r.verification],
+        status: 'published' as const,
+      })),
+      ...fromFile,
+    ];
+  } catch (err) {
+    console.error('[cms] testimonials unavailable', err instanceof Error ? err.message : err);
+    return fromFile;
+  }
 }
 
-export async function getPublishedCaseStudies() {
-  return caseStudies.filter((c) => c.status === 'published' && c.permissionOnFile);
+export async function getPublishedCaseStudies(): Promise<CaseStudy[]> {
+  const fromFile = caseStudies.filter((c) => c.status === 'published' && c.permissionOnFile);
+  try {
+    const rows = await prisma.caseStudy.findMany({ where: { status: 'PUBLISHED', permissionOnFile: true }, orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }] });
+    return [
+      ...rows.map((r) => ({
+        id: r.id,
+        client: r.client,
+        role: r.role,
+        permissionOnFile: true,
+        startingPoint: r.startingPoint,
+        intervention: r.intervention,
+        outcome: { metric: r.outcomeMetric, baseline: r.outcomeBaseline, result: r.outcomeResult, period: r.outcomePeriod, source: r.outcomeSource },
+        verification: VERIFICATION[r.verification],
+        caveat: r.caveat,
+        ...(r.videoUrl ? { video: videoFromUrl(r.videoUrl, `${r.client}: case study`) ?? undefined } : {}),
+        status: 'published' as const,
+      })),
+      ...fromFile,
+    ];
+  } catch (err) {
+    console.error('[cms] case studies unavailable', err instanceof Error ? err.message : err);
+    return fromFile;
+  }
 }
+
+const VERIFICATION = { CLIENT_REPORTED: 'client-reported', INDEPENDENTLY_VERIFIED: 'independently-verified' } as const;
 
 export async function getTrustPoints() {
   return trustPoints.filter((t) => t.approved).map((t) => t.label);

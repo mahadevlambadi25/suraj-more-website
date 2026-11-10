@@ -64,6 +64,14 @@ export function WorkshopAbout({ program }: { program: Program }) {
         {program.curriculum.map((c) => <li key={c}>{c}</li>)}
         <li>Language you can use on your very next sales call</li>
       </ul>
+      {program.included && program.included.length > 0 && (
+        <>
+          <h3 style={{ marginTop: 40 }}>What’s included</h3>
+          <ul className="check-list">
+            {program.included.map((c) => <li key={c}>{c}</li>)}
+          </ul>
+        </>
+      )}
       <h3 style={{ marginTop: 40 }}>Who it’s for</h3>
       <p>{program.audience.join(' · ')} who already have conversations but convert them inconsistently.</p>
       <h3 style={{ marginTop: 40 }}>Who it’s not for</h3>

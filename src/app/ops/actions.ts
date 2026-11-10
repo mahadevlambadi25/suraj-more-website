@@ -98,6 +98,56 @@ export async function saveCohortAction(form: FormData) {
   );
 }
 
+// ── Proof: testimonials & case studies ──
+const proofCommon = (form: FormData) => ({
+  verification: s(form, 'verification'),
+  status: s(form, 'status'),
+  sortOrder: s(form, 'sortOrder') || '0',
+  permissionOnFile: form.get('permissionOnFile') === 'on',
+});
+
+export async function saveTestimonialAction(form: FormData) {
+  const id = s(form, 'testimonialId') || null;
+  await run(
+    form,
+    'ADMIN',
+    async (a) => {
+      const keys = ['client', 'role', 'niche', 'quote', 'videoUrl', 'verifiedOutcome'];
+      const t = await cmd.saveTestimonial(a, id, { ...Object.fromEntries(keys.map((k) => [k, s(form, k)])), ...proofCommon(form) });
+      return t.id;
+    },
+    { revalidatePublic: true, successPath: (tid) => `/ops/proof/testimonials/${tid}?msg=${encodeURIComponent(id ? 'Testimonial saved' : 'Testimonial created')}` },
+  );
+}
+
+export async function deleteTestimonialAction(form: FormData) {
+  await run(form, 'ADMIN', async (a) => {
+    await cmd.deleteTestimonial(a, s(form, 'testimonialId'));
+    return 'Testimonial deleted';
+  }, { revalidatePublic: true, successPath: (msg) => `/ops/proof?msg=${encodeURIComponent(msg)}` });
+}
+
+export async function saveCaseStudyAction(form: FormData) {
+  const id = s(form, 'caseStudyId') || null;
+  await run(
+    form,
+    'ADMIN',
+    async (a) => {
+      const keys = ['client', 'role', 'startingPoint', 'intervention', 'outcomeMetric', 'outcomeBaseline', 'outcomeResult', 'outcomePeriod', 'outcomeSource', 'caveat', 'videoUrl'];
+      const c = await cmd.saveCaseStudy(a, id, { ...Object.fromEntries(keys.map((k) => [k, s(form, k)])), ...proofCommon(form) });
+      return c.id;
+    },
+    { revalidatePublic: true, successPath: (cid) => `/ops/proof/case-studies/${cid}?msg=${encodeURIComponent(id ? 'Case study saved' : 'Case study created')}` },
+  );
+}
+
+export async function deleteCaseStudyAction(form: FormData) {
+  await run(form, 'ADMIN', async (a) => {
+    await cmd.deleteCaseStudy(a, s(form, 'caseStudyId'));
+    return 'Case study deleted';
+  }, { revalidatePublic: true, successPath: (msg) => `/ops/proof?msg=${encodeURIComponent(msg)}` });
+}
+
 // ── Orders ──
 export async function refundOrderAction(form: FormData) {
   await run(form, 'ADMIN', async (a) => {

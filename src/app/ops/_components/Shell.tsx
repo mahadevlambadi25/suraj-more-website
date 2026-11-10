@@ -27,6 +27,7 @@ const NAV: { group: string; items: { href: string; label: string; icon: IconName
       { href: '/ops/workshops', label: 'Workshops', icon: 'workshops' },
       { href: '/ops/orders', label: 'Orders & payments', icon: 'orders', countKey: 'attention' },
       { href: '/ops/applications', label: 'Mentorship', icon: 'mentorship', countKey: 'applications' },
+      { href: '/ops/proof', label: 'Proof', icon: 'check' },
     ],
   },
   {
@@ -47,6 +48,9 @@ const CRUMB: Record<string, string> = {
   webhooks: 'Webhooks',
   refunds: 'Refunds',
   applications: 'Mentorship',
+  proof: 'Proof',
+  testimonials: 'Testimonials',
+  'case-studies': 'Case studies',
   settings: 'Settings',
   search: 'Search',
 };

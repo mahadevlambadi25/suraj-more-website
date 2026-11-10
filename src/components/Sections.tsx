@@ -111,6 +111,11 @@ export function OfferLadder({ programs, cohorts }: { programs: Program[]; cohort
               <p className="price">{p.priceLabel ?? <small>By application</small>}</p>
             )}
             <p>{p.ladderSummary ?? p.summary}</p>
+            {/* PRD §7.1: each card states who it is for and the format/delivery. */}
+            <dl className="offer-facts">
+              <div><dt>For</dt><dd>{p.ladderAudience ?? p.audience.join(', ')}</dd></div>
+              <div><dt>Format</dt><dd>{p.format}</dd></div>
+            </dl>
             <ul className="check-list">
               {p.curriculum.slice(0, 3).map((c) => (
                 <li key={c}>{c}</li>

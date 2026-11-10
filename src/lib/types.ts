@@ -41,6 +41,8 @@ export interface SiteSettings {
 export interface VideoRef {
   provider: 'youtube' | 'vimeo';
   id: string;
+  /** Vimeo privacy hash — required to embed unlisted Vimeo videos (player.vimeo.com/video/ID?h=HASH). */
+  hash?: string;
   title: string;
   poster?: string;
   captions: boolean;
@@ -55,8 +57,12 @@ export interface Program {
   /** Short line used on the offer-ladder cards; falls back to `summary`. */
   ladderSummary?: string;
   audience: string[];
+  /** One short "who it's for" line for the offer-ladder cards (PRD §7.1). */
+  ladderAudience?: string;
   format: string;
   curriculum: string[];
+  /** What a ticket includes (PRD §7.2 "Included"). */
+  included?: string[];
   /** Displayed price; null = never show a price (e.g. mentorship until confirmed). */
   priceLabel: string | null;
   status: ProgramStatus;

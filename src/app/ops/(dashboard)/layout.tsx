@@ -6,6 +6,10 @@ import { Shell, type Notice } from '../_components/Shell';
 
 export const dynamic = 'force-dynamic';
 
+// Intentionally NO route-level `loading.tsx` in /ops/(dashboard): with Next.js 15 it intercepted the
+// navigation that follows every admin save (server action → redirect to the same page with ?msg=/?err=),
+// leaving the page stuck on the skeleton or ignoring the redirect in ~1/3 of saves. Measured: 10–16/24
+// saves showed their result with it, 96/96 without it. Admin pages are dynamic and fast, so no skeleton is needed.
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const admin = await requireAdmin('VIEWER');
   let paymentMode: string;

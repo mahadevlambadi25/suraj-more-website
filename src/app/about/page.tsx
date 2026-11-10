@@ -22,7 +22,7 @@ export default async function AboutPage() {
   const [settings, frameworks] = await Promise.all([getSettings(), getFrameworks()]);
   return (
     <>
-      <JsonLd data={personSchema()} />
+      <JsonLd data={personSchema(settings.socials)} />
       <PageHero
         eyebrow="About"
         title={<>Sales conversations, done with integrity.</>}

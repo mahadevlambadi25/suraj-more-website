@@ -21,7 +21,9 @@ Live payments stay **off** (`CASHFREE_MODE=sandbox`) until every item in section
 - [ ] Vercel production env vars set (check-env passes), custom domain + HTTPS
 - [ ] Owner admin created in production; test admin accounts removed
 - [ ] Sample cohort absent in production (`/ops/workshops` shows no "sample" rows you rely on)
-- [ ] Error monitoring (Sentry or similar) connected
+- [ ] New migration `20261110105807_prd_reminders_and_proof` applied to Neon (`npm run neon -- migrate deploy --ipv4`; additive only: Testimonial, CaseStudy, reminderSentAt)
+- [ ] `CRON_SECRET` set in Vercel (enables the daily 09:00 IST job: workshop reminders + external link check)
+- [ ] Error monitoring: page errors and 404s are recorded in `/ops` → Overview; connect Sentry (or similar) for server-side stack traces
 - [ ] Uptime monitor on `/api/health`
 
 ## C. Integrations

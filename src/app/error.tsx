@@ -2,11 +2,13 @@
 
 import Link from 'next/link';
 import { useEffect } from 'react';
+import { reportIssue } from '@/components/ReportIssue';
 
 export default function ErrorPage({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
-    // Hook point for error monitoring (e.g. Sentry.captureException(error)).
+    // PRD §13.2 error monitoring: recorded in /ops (and forwarded to OPS_ALERT_WEBHOOK_URL when configured).
     console.error(error);
+    reportIssue('client_error', error.digest);
   }, [error]);
 
   return (

@@ -30,7 +30,7 @@ Values marked **/ops** can be changed on the live site without a deploy (`/ops` 
 | 13 | Support reply time (e.g. “one business day”) | Contact page hero | no time promise shown |
 | 14 | Framework names, spellings and step wording | `src/content/frameworks.ts` | copy-doc taglines/descriptions; step bodies pending review |
 | 15 | Article copy (3 Insights articles) | `src/content/articles.ts` | published drafts — need Suraj’s approval |
-| 16 | Testimonials + case studies (permission, exact wording, sources) | `src/content/proof.ts` | none published; honest empty state shown |
+| 16 | Testimonials + case studies (permission, exact wording, sources) | `/ops` → Proof | none published; honest empty state shown. Publishing requires “permission on file” |
 | 17 | Legal pages (lawyer review, DPDP, GST, refund terms) | `src/content/legal.ts` | drafts with a visible “Draft pending legal review” banner |
 
 ## Assets & operations
@@ -38,10 +38,19 @@ Values marked **/ops** can be changed on the live site without a deploy (`/ops` 
 | # | Item | Where | Current state |
 |---|---|---|---|
 | 18 | Founder portraits (8–12) | `settings.founder.portrait`, `/public/images` | monogram placeholder on Home + About |
-| 19 | Free-training video (unlisted YouTube/Vimeo ID + transcript) | `settings.freeTraining.video` | “Training video will appear here” placeholder on the watch page |
+| 19 | Free-training video (unlisted YouTube/Vimeo link + captions + transcript) | `/ops` → Settings → Free Training | “Training video is not available yet.” shown on the watch page |
 | 20 | Real workshop cohort: dates, price, seats, VIP add-on, **Zoom attendee link** | `/ops` → Workshops | none in production → site shows the waitlist |
 | 21 | Email / WhatsApp / CRM providers | Vercel env (`EMAIL_WEBHOOK_URL`, `WHATSAPP_WEBHOOK_URL`, `CRM_WEBHOOK_URL`) | not configured → messages recorded as NOT_CONFIGURED, nothing is sent |
 | 22 | Cashfree webhook registration | Cashfree Test dashboard → Webhooks | `https://suraj-more-website.vercel.app/api/webhooks/cashfree` must be added |
+
+## Added for PRD compliance (need Suraj’s confirmation)
+
+| # | Item | Where | Current state |
+|---|---|---|---|
+| 23 | Workshop Day 1 / Day 2 wording (PRD §7.2: Day 1 One Skill + Sales Arm Framework + role of the coach; Day 2 Doctor Frame + C3 Certainty Reframe) | `src/content/programs.ts` | PRD wording shown; replaces the copy-doc “Intent / Certainty → Close” lines. “Live role-play and Q&A” removed because live Q&A is part of the paid VIP add-on (PRD §3.2) |
+| 24 | Workshop “Included” (PRD §7.2: live seat for both days, sales scripts, approved bonuses) | `src/content/programs.ts` → `included` | “A live seat for both days on Zoom”, “Sales scripts”. Add approved bonuses only |
+| 25 | Social profile links (Instagram, LinkedIn, YouTube) | `/ops` → Settings | none shown until set |
+| 26 | Daily jobs secret | Vercel env `CRON_SECRET` | not set → reminders and the link check do not run |
 
 ## Deliberate wording deviations from the copy document (honesty)
 

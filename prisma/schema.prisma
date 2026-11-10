@@ -219,21 +219,23 @@ enum RegistrationStatus {
 
 /// Created exactly once per paid order (orderId unique).
 model WorkshopRegistration {
-  id        String             @id @default(uuid()) @db.Uuid
-  cohortId  String             @db.Uuid
-  cohort    WorkshopCohort     @relation(fields: [cohortId], references: [id])
-  orderId   String             @unique @db.Uuid
-  order     Order              @relation(fields: [orderId], references: [id])
-  leadId    String             @db.Uuid
-  lead      Lead               @relation(fields: [leadId], references: [id])
-  name      String
-  email     String
-  phone     String
-  vipAddon  Boolean            @default(false)
-  status    RegistrationStatus @default(CONFIRMED)
-  attended  Boolean?
-  createdAt DateTime           @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime           @updatedAt @db.Timestamptz(3)
+  id             String             @id @default(uuid()) @db.Uuid
+  cohortId       String             @db.Uuid
+  cohort         WorkshopCohort     @relation(fields: [cohortId], references: [id])
+  orderId        String             @unique @db.Uuid
+  order          Order              @relation(fields: [orderId], references: [id])
+  leadId         String             @db.Uuid
+  lead           Lead               @relation(fields: [leadId], references: [id])
+  name           String
+  email          String
+  phone          String
+  vipAddon       Boolean            @default(false)
+  status         RegistrationStatus @default(CONFIRMED)
+  attended       Boolean?
+  /// Set once the pre-workshop reminder was accepted by every channel (PRD §10.1 / §11.3).
+  reminderSentAt DateTime?          @db.Timestamptz(3)
+  createdAt      DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime           @updatedAt @db.Timestamptz(3)
 
   @@index([cohortId, status])
 }
@@ -484,4 +486,58 @@ model OutboundClick {
   createdAt DateTime @default(now()) @db.Timestamptz(3)
 
   @@index([target, createdAt])
+}
+
+// ───────────────────────────── Proof (PRD §8.2 / §11.2) ─────────────────────────────
+// Managed in /ops → Proof. Nothing is shown publicly unless status = PUBLISHED AND permissionOnFile = true.
+
+enum ProofVerification {
+  CLIENT_REPORTED
+  INDEPENDENTLY_VERIFIED
+}
+
+enum ProofStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model Testimonial {
+  id               String            @id @default(uuid()) @db.Uuid
+  client           String
+  role             String
+  niche            String
+  quote            String?
+  videoUrl         String?
+  verifiedOutcome  String?
+  verification     ProofVerification @default(CLIENT_REPORTED)
+  permissionOnFile Boolean           @default(false)
+  status           ProofStatus       @default(DRAFT)
+  sortOrder        Int               @default(0)
+  createdAt        DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime          @updatedAt @db.Timestamptz(3)
+
+  @@index([status, sortOrder])
+}
+
+model CaseStudy {
+  id               String            @id @default(uuid()) @db.Uuid
+  client           String
+  role             String
+  startingPoint    String
+  intervention     String
+  outcomeMetric    String
+  outcomeBaseline  String
+  outcomeResult    String
+  outcomePeriod    String
+  outcomeSource    String
+  verification     ProofVerification @default(CLIENT_REPORTED)
+  caveat           String
+  videoUrl         String?
+  permissionOnFile Boolean           @default(false)
+  status           ProofStatus       @default(DRAFT)
+  sortOrder        Int               @default(0)
+  createdAt        DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime          @updatedAt @db.Timestamptz(3)
+
+  @@index([status, sortOrder])
 }

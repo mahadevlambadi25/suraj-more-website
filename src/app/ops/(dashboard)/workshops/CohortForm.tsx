@@ -102,7 +102,7 @@ export function CohortForm({ cohort, readOnly }: { cohort?: WorkshopCohort; read
           <legend>Schedule</legend>
           <div className="o-field">
             <label htmlFor="sessions">Sessions (one per line, IST)</label>
-            <textarea className="o-textarea o-mono" id="sessions" name="sessions" required rows={4} defaultValue={sessions?.success ? sessionsToText(sessions.data) : 'Day 1 | 2027-01-16 11:00 | 14:00 | Intent — discovery that earns the right to make an offer\nDay 2 | 2027-01-17 11:00 | 14:00 | Certainty → Close — handling hesitation without pressure'} />
+            <textarea className="o-textarea o-mono" id="sessions" name="sessions" required rows={4} defaultValue={sessions?.success ? sessionsToText(sessions.data) : 'Day 1 | 2027-01-16 11:00 | 14:00 | The One Skill, the Sales Arm Framework and the role of the coach\nDay 2 | 2027-01-17 11:00 | 14:00 | The Doctor Frame and the C3 Certainty Reframe'} />
             <span className="o-hint">Format: <code>Label | YYYY-MM-DD HH:mm | HH:mm | Topic</code></span>
           </div>
           <div className="o-field">

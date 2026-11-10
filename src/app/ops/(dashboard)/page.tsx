@@ -15,6 +15,13 @@ const ACTIVITY_ICON: Record<ActivityKind, IconName> = {
   refund: 'refunds',
 };
 
+/** Site alerts (channel OPS_ALERT) carry their human-readable message in the payload. */
+function alertMessage(e: { channel: string; payload: unknown }) {
+  if (e.channel !== 'OPS_ALERT') return null;
+  const m = (e.payload as { message?: unknown } | null)?.message;
+  return typeof m === 'string' ? m.slice(0, 200) : null;
+}
+
 export default async function OverviewPage({ searchParams }: { searchParams: SP }) {
   const admin = await requireAdmin('VIEWER');
   const { denied } = await searchParams;
@@ -151,7 +158,7 @@ export default async function OverviewPage({ searchParams }: { searchParams: SP 
       </div>
 
       <div id="delivery" style={{ marginTop: 20 }}>
-        <Card title="Message delivery" description="Emails, WhatsApp messages and CRM syncs that were not delivered — either the provider is not configured yet or it returned an error." flush>
+        <Card title="Message delivery & site alerts" description="Emails, WhatsApp messages and CRM syncs that were not delivered (provider not configured yet, or it returned an error), plus site alerts such as page errors, 404s and broken external links." flush>
           {deliveryIssues.length === 0 ? (
             <EmptyState icon="send" title="No delivery problems">All recorded messages were accepted by their provider.</EmptyState>
           ) : (
@@ -163,7 +170,11 @@ export default async function OverviewPage({ searchParams }: { searchParams: SP 
                     <tr key={e.id}>
                       <td className="o-nowrap">{fmtDate(e.createdAt)}</td>
                       <td>{label(e.channel)}</td>
-                      <td className="o-hide-sm">{label(e.template)}{e.error && <span className="o-cell-sub">{e.error}</span>}</td>
+                      <td className="o-hide-sm">
+                        {label(e.template)}
+                        {alertMessage(e) && <span className="o-cell-sub o-break">{alertMessage(e)}</span>}
+                        {e.error && <span className="o-cell-sub">{e.error}</span>}
+                      </td>
                       <td className="o-hide-sm o-small">{e.recipient ?? '—'}</td>
                       <td><Badge value={e.status} /></td>
                     </tr>

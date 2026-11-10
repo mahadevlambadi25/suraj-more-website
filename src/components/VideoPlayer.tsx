@@ -69,10 +69,10 @@ export function VideoPlayer({ video, label }: { video: VideoRef | null; label?: 
 
   if (!video) {
     return (
-      <div className="video video-placeholder" role="img" aria-label="Video coming soon">
+      <div className="video video-placeholder" role="status" aria-label="Training video is not available yet">
         <div>
-          <p style={{ margin: 0, color: '#c4cbd5', fontWeight: 600 }}>Training video will appear here</p>
-          <p className="small" style={{ margin: '6px 0 0' }}>Add the unlisted YouTube/Vimeo ID in site settings.</p>
+          <p style={{ margin: 0, color: '#c4cbd5', fontWeight: 600 }}>Training video is not available yet.</p>
+          <p className="small" style={{ margin: '6px 0 0' }}>Please check back soon. This page will show it as soon as it’s published.</p>
         </div>
       </div>
     );
@@ -81,7 +81,7 @@ export function VideoPlayer({ video, label }: { video: VideoRef | null; label?: 
   const src =
     video.provider === 'youtube'
       ? `https://www.youtube-nocookie.com/embed/${video.id}?autoplay=1&rel=0&modestbranding=1&enablejsapi=1&cc_load_policy=${video.captions ? 1 : 0}&origin=${typeof window !== 'undefined' ? encodeURIComponent(window.location.origin) : ''}`
-      : `https://player.vimeo.com/video/${video.id}?autoplay=1&dnt=1&title=0&byline=0&portrait=0${video.captions ? '&texttrack=en' : ''}`;
+      : `https://player.vimeo.com/video/${video.id}?${video.hash ? `h=${encodeURIComponent(video.hash)}&` : ''}autoplay=1&dnt=1&title=0&byline=0&portrait=0${video.captions ? '&texttrack=en' : ''}`;
 
   return (
     <div>
@@ -102,7 +102,7 @@ export function VideoPlayer({ video, label }: { video: VideoRef | null; label?: 
         <details className="transcript">
           <summary>Read the transcript</summary>
           <div className="prose small">
-            {video.transcript.split('\n\n').map((p, i) => (
+            {video.transcript.split(/\r?\n\s*\r?\n/).map((p, i) => (
               <p key={i}>{p}</p>
             ))}
           </div>

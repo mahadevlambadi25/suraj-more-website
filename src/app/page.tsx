@@ -56,7 +56,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <JsonLd data={personSchema()} />
+      <JsonLd data={personSchema(settings.socials)} />
 
       {/* 1. Announcement strip → rendered in layout (only when a live cohort is open) */}
 

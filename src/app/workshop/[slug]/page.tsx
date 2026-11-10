@@ -10,8 +10,8 @@ import { MobileStickyCta } from '@/components/MobileStickyCta';
 import { JsonLd, PageHero, Schedule } from '@/components/Sections';
 import { TrackedLink } from '@/components/TrackedLink';
 import { cohortDateRange, seatsLabel, WorkshopAbout, WorkshopFrameworksAndFaq } from '@/components/Workshop';
-import { getCohortPage, getFaqs, getFrameworks, getProgram } from '@/lib/cms';
-import { formatDate, formatInr, formatTime } from '@/lib/format';
+import { getCohortPage, getFaqs, getFrameworks, getProgram, getSettings } from '@/lib/cms';
+import { formatDate, formatInr, formatTime, whatsappHref } from '@/lib/format';
 import { pageMeta, workshopSchemas } from '@/lib/seo';
 
 // Shows live workshop availability: always rendered fresh, so a cohort closed in /ops disappears on the very
@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function WorkshopCohortPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [page, program, frameworks, faqs] = await Promise.all([loadCohortPage(slug), getProgram('workshop'), getFrameworks(), getFaqs()]);
+  const [page, program, frameworks, faqs, settings] = await Promise.all([loadCohortPage(slug), getProgram('workshop'), getFrameworks(), getFaqs(), getSettings()]);
   if (!page) notFound();
   const { cohort, state } = page;
   const open = state === 'open';
@@ -107,6 +107,18 @@ export default async function WorkshopCohortPage({ params }: { params: Promise<{
                       vipAddon: cohort.vipAddon,
                     }}
                   />
+                  {/* PRD §4.6 / §11.4: say what happens after payment BEFORE checkout; §12.6: support route at checkout. */}
+                  <div className="after-pay">
+                    <h3>What happens after you pay</h3>
+                    <ol>
+                      <li>Cashfree confirms your payment securely and you see your order reference.</li>
+                      <li>Your confirmation and Zoom joining link are sent to your email{' '}and WhatsApp before the first session.</li>
+                      <li>
+                        Questions? <a href={`mailto:${settings.contact.email}`}>{settings.contact.email}</a> or{' '}
+                        <a href={whatsappHref(settings.contact.whatsappNumber, 'Hi, I have a question about the workshop')} target="_blank" rel="noopener noreferrer">WhatsApp</a>.
+                      </li>
+                    </ol>
+                  </div>
                 </div>
               ) : (
                 <div className="form-card" id="waitlist">

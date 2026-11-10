@@ -11,6 +11,7 @@ export const programs: Program[] = [
     summary: 'A free course and community covering the foundations of a structured sales conversation, before you invest in anything.',
     ladderSummary: 'The foundations of a structured sales conversation, in a free course and community.',
     audience: ['Coaches early in their sales journey', 'Sales professionals and closers', 'Anyone exploring Suraj’s approach'],
+    ladderAudience: 'Sales professionals, closers and coaches early in their sales journey',
     format: 'Self-paced course + community (hosted on Whop)',
     curriculum: [
       'How a qualified sales conversation is structured',
@@ -28,12 +29,15 @@ export const programs: Program[] = [
     summary: 'Two live days on the one skill that moves the most sales conversations forward: leading the call with certainty instead of pressure.',
     ladderSummary: 'Two live days on Zoom, practising the one skill that moves the most conversations forward.',
     audience: ['Coaches', 'Consultants', 'Sales professionals'],
+    ladderAudience: 'Coaches, consultants and sales professionals',
     format: '2-day live workshop on Zoom',
+    // PRD §7.2 (Day 1 / Day 2). [[CONFIRM: final session wording with Suraj]]
     curriculum: [
-      'Day 1, Intent: discovery that earns you the right to make an offer',
-      'Day 2, Certainty → Close: handling hesitation without pushing',
-      'Live role-play and Q&A',
+      'Day 1: The One Skill, the Sales Arm Framework and the role of the coach in the sales conversation',
+      'Day 2: The Doctor Frame and the C3 Certainty Reframe — leading the conversation without pressure',
     ],
+    // PRD §7.2 "Included". Add only bonuses Suraj has approved. [[CONFIRM: deliverables]]
+    included: ['A live seat for both days on Zoom', 'Sales scripts'],
     priceLabel: null, // set from the active cohort
     status: 'waitlist',
     cta: { label: 'Explore the Workshop', href: '/workshop' },
@@ -49,6 +53,7 @@ export const programs: Program[] = [
       'You’re willing to have your real calls reviewed, and to practise',
       'Consultants, agency owners and established coaches with a high-ticket offer',
     ],
+    ladderAudience: 'Consultants, agency owners and established coaches with a high-ticket offer',
     format: 'Private mentorship — details shared after application',
     curriculum: [
       'An audit of your current sales conversations',

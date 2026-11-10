@@ -3,7 +3,7 @@ import { hasRole } from '@/lib/auth/session';
 import { requireAdmin } from '@/lib/auth/guards';
 import { env } from '@/lib/env';
 import { integrationStatus } from '@/lib/integrations';
-import { EDITABLE_SETTINGS, getMentorshipBookingUrl, getMergedSettings } from '@/lib/settings';
+import { EDITABLE_SETTINGS, getMentorshipBookingUrl, getMergedSettings, getSettingOverrides, SITE_SETTING_KEYS } from '@/lib/settings';
 import { setAdminActiveAction, updateSettingsAction } from '../../actions';
 import { ActionForm } from '../../_components/ActionForm';
 import { SubmitButton } from '../../_components/controls';
@@ -13,13 +13,18 @@ export default async function SettingsPage({ searchParams }: { searchParams: SP 
   const admin = await requireAdmin('VIEWER');
   const sp = await searchParams;
   const isOwner = hasRole(admin, 'OWNER');
-  const [settings, bookingUrl, admins] = await Promise.all([getMergedSettings(), getMentorshipBookingUrl(), listAdmins()]);
+  const [settings, bookingUrl, admins, overrides] = await Promise.all([getMergedSettings(), getMentorshipBookingUrl(), listAdmins(), getSettingOverrides()]);
+  const savedVideoUrl = overrides.freeTrainingVideoUrl ?? '';
+  const video = settings.freeTraining.video;
   const current: Record<string, string> = {
     contactEmail: settings.contact.email,
     whatsappNumber: settings.contact.whatsappNumber,
     whatsappDisplay: settings.contact.whatsappDisplay,
     levelZeroJoinUrl: settings.levelZero.joinUrl,
     mentorshipBookingUrl: bookingUrl,
+    instagramUrl: overrides.instagramUrl ?? '',
+    linkedinUrl: overrides.linkedinUrl ?? '',
+    youtubeUrl: overrides.youtubeUrl ?? '',
   };
 
   let cf: { mode: string; appIdSet: boolean; secretSet: boolean; webhookSecretOverride: boolean; verifyWithApi: boolean; error?: string };
@@ -43,13 +48,67 @@ export default async function SettingsPage({ searchParams }: { searchParams: SP 
             <form action={updateSettingsAction} className="o-form">
               <input type="hidden" name="returnTo" value="/ops/settings" />
               <fieldset disabled={!isOwner} style={{ border: 0, padding: 0, margin: 0, display: 'grid', gap: 18, minWidth: 0 }}>
-                {Object.entries(EDITABLE_SETTINGS).map(([key, def]) => (
+                {SITE_SETTING_KEYS.map((key) => (
                   <div className="o-field" key={key}>
-                    <label htmlFor={key}>{def.label}</label>
+                    <label htmlFor={key}>{EDITABLE_SETTINGS[key].label}</label>
                     <input className="o-input" id={key} name={key} defaultValue={current[key]} />
                   </div>
                 ))}
                 {isOwner && <div className="o-form-actions"><SubmitButton pendingLabel="Saving…">Save settings</SubmitButton></div>}
+              </fieldset>
+            </form>
+          </Card>
+
+          <Card title="Free Training" description={isOwner ? 'The video people see on the Free Training watch page after registering.' : 'Only the owner can change this.'}>
+            <form action={updateSettingsAction} className="o-form">
+              <input type="hidden" name="returnTo" value="/ops/settings" />
+              <fieldset disabled={!isOwner} style={{ border: 0, padding: 0, margin: 0, display: 'grid', gap: 18, minWidth: 0 }}>
+                <div className="o-field">
+                  <label htmlFor="freeTrainingVideoUrl">{EDITABLE_SETTINGS.freeTrainingVideoUrl.label}</label>
+                  <input
+                    className="o-input"
+                    id="freeTrainingVideoUrl"
+                    name="freeTrainingVideoUrl"
+                    type="url"
+                    inputMode="url"
+                    placeholder="https://youtu.be/… or https://vimeo.com/…"
+                    defaultValue={savedVideoUrl}
+                  />
+                  <p className="o-hint">YouTube or Vimeo link. Unlisted videos work (for unlisted Vimeo, paste the full share link including its private code). Leave empty to show “Training video is not available yet.”</p>
+                </div>
+                <div className="o-field">
+                  <label htmlFor="freeTrainingVideoCaptions">{EDITABLE_SETTINGS.freeTrainingVideoCaptions.label}</label>
+                  <select className="o-select" id="freeTrainingVideoCaptions" name="freeTrainingVideoCaptions" defaultValue={overrides.freeTrainingVideoCaptions === 'on' ? 'on' : 'off'}>
+                    <option value="off">Off (viewers can still turn them on)</option>
+                    <option value="on">On — show captions when the video starts</option>
+                  </select>
+                  <p className="o-hint">Uses the captions uploaded to YouTube or Vimeo for this video.</p>
+                </div>
+                <div className="o-field">
+                  <label htmlFor="freeTrainingVideoTranscript">{EDITABLE_SETTINGS.freeTrainingVideoTranscript.label}</label>
+                  <textarea className="o-textarea" id="freeTrainingVideoTranscript" name="freeTrainingVideoTranscript" rows={5} maxLength={20000} defaultValue={overrides.freeTrainingVideoTranscript ?? ''} placeholder="Paste the transcript. Leave a blank line between paragraphs." />
+                  <p className="o-hint">Shown under the video as “Read the transcript”. Leave empty to hide it.</p>
+                </div>
+                <dl className="o-dl">
+                  <div>
+                    <dt>Currently saved</dt>
+                    <dd className="o-break">{savedVideoUrl ? <a href={savedVideoUrl} target="_blank" rel="noopener noreferrer">{savedVideoUrl}</a> : <span className="o-muted">No video set</span>}</dd>
+                  </div>
+                  <div>
+                    <dt>Watch page shows</dt>
+                    <dd>
+                      {video ? (
+                        <>
+                          <Badge tone="ok">{video.provider === 'youtube' ? 'YouTube video' : 'Vimeo video'}</Badge>{' '}
+                          <span className="o-mono o-small">{video.id}{video.hash ? ` (private link)` : ''}</span>
+                        </>
+                      ) : (
+                        <Badge tone="warn">Not available message</Badge>
+                      )}
+                    </dd>
+                  </div>
+                </dl>
+                {isOwner && <div className="o-form-actions"><SubmitButton pendingLabel="Saving…">Save Changes</SubmitButton></div>}
               </fieldset>
             </form>
           </Card>

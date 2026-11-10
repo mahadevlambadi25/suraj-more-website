@@ -1,8 +1,10 @@
 import Link from 'next/link';
+import { ReportNotFound } from '@/components/ReportIssue';
 
 export default function NotFound() {
   return (
     <section className="section">
+      <ReportNotFound />
       <div className="container status-card">
         <p className="eyebrow" style={{ justifyContent: 'center' }}>404</p>
         <h1 style={{ fontSize: '2.4rem' }}>This page doesn’t exist.</h1>

@@ -223,3 +223,21 @@ export function listAdmins() {
 export function recentIntegrationProblems(take = 20) {
   return prisma.integrationEvent.findMany({ where: { status: { in: ['FAILED', 'NOT_CONFIGURED'] } }, orderBy: { createdAt: 'desc' }, take });
 }
+
+// ───────────────────────────── Proof (testimonials & case studies) ─────────────────────────────
+
+export async function listProof() {
+  const [testimonials, caseStudies] = await Promise.all([
+    prisma.testimonial.findMany({ orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }] }),
+    prisma.caseStudy.findMany({ orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }] }),
+  ]);
+  return { testimonials, caseStudies };
+}
+
+export function getTestimonial(id: string) {
+  return UUID_RE.test(id) ? prisma.testimonial.findUnique({ where: { id } }) : null;
+}
+
+export function getCaseStudy(id: string) {
+  return UUID_RE.test(id) ? prisma.caseStudy.findUnique({ where: { id } }) : null;
+}

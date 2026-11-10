@@ -47,6 +47,10 @@ export const env = {
   get opsAlertWebhookUrl() {
     return process.env.OPS_ALERT_WEBHOOK_URL ?? '';
   },
+  /** Vercel Cron sends `Authorization: Bearer <CRON_SECRET>`. Unset = scheduled jobs refuse to run. */
+  get cronSecret() {
+    return process.env.CRON_SECRET ?? '';
+  },
   get integrationSigningSecret() {
     return process.env.INTEGRATION_SIGNING_SECRET ?? '';
   },

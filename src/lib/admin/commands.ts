@@ -8,6 +8,7 @@ import { fulfilOrder, processWebhookEvent, reconcileOrder, requestRefund, syncRe
 import { safeError } from '../security';
 import { EDITABLE_SETTINGS, getMentorshipBookingUrl, type SettingKey } from '../settings';
 import { cohortFormSchema, cohortFormToData } from './cohort-form';
+import { caseStudyFormSchema, issues, testimonialFormSchema } from './proof-form';
 
 // Privileged operations. Each one: (1) checks the actor's role itself, (2) does the work through the
 // same domain services the public flow uses, (3) writes an audit log entry.
@@ -61,6 +62,41 @@ export async function saveCohort(actor: Actor, cohortId: string | null, raw: Rec
   const changed = (Object.keys(data) as (keyof typeof data)[]).filter((k) => JSON.stringify(before[k]) !== JSON.stringify(c[k]) && k !== 'zoomPasscode');
   await audit({ adminId: actor.id, action: 'cohort.update', entityType: 'cohort', entityId: c.id, metadata: { changed, statusFrom: before.status, statusTo: c.status, pricePaiseFrom: before.pricePaise, pricePaiseTo: c.pricePaise }, ipHash: actor.ipHash });
   return c;
+}
+
+// ── Proof: testimonials & case studies (PRD §8.2 / §11.2 / §11.5) ──
+export async function saveTestimonial(actor: Actor, id: string | null, raw: Record<string, unknown>) {
+  assertRole(actor, 'ADMIN');
+  const parsed = testimonialFormSchema.safeParse(raw);
+  if (!parsed.success) throw new CommandError(issues(parsed.error));
+  const data = parsed.data;
+  const t = id ? await prisma.testimonial.update({ where: { id: uuid(id) }, data }) : await prisma.testimonial.create({ data });
+  await audit({ adminId: actor.id, action: id ? 'testimonial.update' : 'testimonial.create', entityType: 'testimonial', entityId: t.id, metadata: { status: t.status, permissionOnFile: t.permissionOnFile }, ipHash: actor.ipHash });
+  return t;
+}
+
+export async function deleteTestimonial(actor: Actor, id: string) {
+  assertRole(actor, 'ADMIN');
+  const t = await prisma.testimonial.delete({ where: { id: uuid(id) } }).catch(() => null);
+  if (!t) throw new CommandError('Testimonial not found');
+  await audit({ adminId: actor.id, action: 'testimonial.delete', entityType: 'testimonial', entityId: id, metadata: { client: t.client }, ipHash: actor.ipHash });
+}
+
+export async function saveCaseStudy(actor: Actor, id: string | null, raw: Record<string, unknown>) {
+  assertRole(actor, 'ADMIN');
+  const parsed = caseStudyFormSchema.safeParse(raw);
+  if (!parsed.success) throw new CommandError(issues(parsed.error));
+  const data = parsed.data;
+  const c = id ? await prisma.caseStudy.update({ where: { id: uuid(id) }, data }) : await prisma.caseStudy.create({ data });
+  await audit({ adminId: actor.id, action: id ? 'case_study.update' : 'case_study.create', entityType: 'case_study', entityId: c.id, metadata: { status: c.status, permissionOnFile: c.permissionOnFile }, ipHash: actor.ipHash });
+  return c;
+}
+
+export async function deleteCaseStudy(actor: Actor, id: string) {
+  assertRole(actor, 'ADMIN');
+  const c = await prisma.caseStudy.delete({ where: { id: uuid(id) } }).catch(() => null);
+  if (!c) throw new CommandError('Case study not found');
+  await audit({ adminId: actor.id, action: 'case_study.delete', entityType: 'case_study', entityId: id, metadata: { client: c.client }, ipHash: actor.ipHash });
 }
 
 // ── Orders & payments ──
