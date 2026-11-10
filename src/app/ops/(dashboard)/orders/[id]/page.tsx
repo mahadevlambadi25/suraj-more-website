@@ -77,7 +77,7 @@ export default async function OrderDetailPage({ params, searchParams }: { params
       />
       <Flash msg={sp.msg} err={sp.err} />
 
-      <div className="o-stats" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
+      <div className="o-stats o-stats--fit">
         <div className="o-card o-stat"><span className="o-stat-label">Status</span><div className="o-stat-value" style={{ fontSize: 18 }}><Badge value={o.status} /></div></div>
         <div className="o-card o-stat"><span className="o-stat-label">Amount</span><div className="o-stat-value">{money(o.amountPaise)}</div><div className="o-stat-note">{o.currency}</div></div>
         <div className="o-card o-stat"><span className="o-stat-label">Paid at</span><div className="o-stat-value" style={{ fontSize: 16 }}>{fmtDate(o.paidAt)}</div></div>

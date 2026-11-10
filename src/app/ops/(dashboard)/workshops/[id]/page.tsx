@@ -25,7 +25,7 @@ export default async function CohortDetailPage({ params, searchParams }: { param
       {cohort.isSample && <div className="o-flash"><Alert tone="warn" title="Sample cohort">Hidden from the public website in production builds.</Alert></div>}
       {!cohort.zoomJoinUrl && <div className="o-flash"><Alert tone="warn" title="No Zoom link">Paid participants will not receive a join link until one is added below.</Alert></div>}
 
-      <div className="o-stats" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
+      <div className="o-stats o-stats--fit">
         <div className="o-card o-stat"><span className="o-stat-label">Status</span><div className="o-stat-value" style={{ fontSize: 18 }}><Badge value={cohort.status} /></div><div className="o-stat-note">Bookable now: {bookable ? 'yes' : 'no'}</div></div>
         <div className="o-card o-stat"><span className="o-stat-label">Confirmed seats</span><div className="o-stat-value">{confirmed.length}{cohort.seatLimit ? <span className="o-muted" style={{ fontSize: 16 }}> / {cohort.seatLimit}</span> : ''}</div></div>
         <div className="o-card o-stat"><span className="o-stat-label">Price</span><div className="o-stat-value">{money(cohort.pricePaise)}</div>{cohort.vipAddonActive && <div className="o-stat-note">+ {money(cohort.vipAddonPricePaise)} VIP add-on</div>}</div>

@@ -19,7 +19,7 @@ export default async function RefundsPage({ searchParams }: { searchParams: SP }
       <PageHeader title="Refunds" description="Refunds are started from an order’s page and executed only through Cashfree’s server API. Each order can have at most one active refund." />
       <Flash msg={sp.msg} err={sp.err} />
 
-      <div className="o-stats" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
+      <div className="o-stats o-stats--fit">
         <div className="o-card o-stat"><span className="o-stat-label">Refunds</span><div className="o-stat-value">{refunds.length}</div></div>
         <div className="o-card o-stat"><span className="o-stat-label">In progress</span><div className="o-stat-value">{inProgress}</div><div className="o-stat-note">Pending or on hold</div></div>
         <div className="o-card o-stat"><span className="o-stat-label">Refunded</span><div className="o-stat-value">{money(refundedPaise)}</div><div className="o-stat-note">Completed refunds</div></div>

@@ -45,7 +45,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: SP })
           <div className="o-table-wrap">
             <table className="o-table">
               <thead>
-                <tr><th>Order</th><th>Customer</th><th className="o-num">Amount</th><th>Status</th><th className="o-hide-sm">Provider</th><th className="o-hide-sm">Paid</th><th className="o-hide-sm">Cashfree reference</th></tr>
+                <tr><th>Order</th><th>Customer</th><th className="o-num">Amount</th><th>Status</th><th className="o-hide-sm">Provider</th><th className="o-hide-sm">Paid</th><th className="o-hide-sm">Cashfree reference</th><th className="o-num"><span className="o-sr">Actions</span></th></tr>
               </thead>
               <tbody>
                 {rows.map((o) => (
@@ -57,6 +57,11 @@ export default async function OrdersPage({ searchParams }: { searchParams: SP })
                     <td className="o-hide-sm"><span style={{ textTransform: 'capitalize' }}>{o.provider.toLowerCase()}</span><span className="o-cell-sub">{o.providerMode}</span></td>
                     <td className="o-hide-sm o-nowrap">{fmtDate(o.paidAt)}</td>
                     <td className="o-hide-sm o-mono">{o.providerOrderId ?? '—'}{o.payments[0] && <span className="o-cell-sub">pay {o.payments[0].providerPaymentId}</span>}</td>
+                    <td className="o-num">
+                      <Link href={`/ops/orders/${o.id}`} className="o-btn o-btn--secondary o-btn--sm o-view-btn" aria-label={`View order ${o.orderNumber}`}>
+                        View <span aria-hidden="true">→</span>
+                      </Link>
+                    </td>
                   </tr>
                 ))}
               </tbody>
