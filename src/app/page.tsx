@@ -15,6 +15,10 @@ import {
 } from '@/lib/cms';
 import { pageMeta, personSchema } from '@/lib/seo';
 
+// Shows live workshop availability: always rendered fresh, so a cohort closed in /ops disappears on the very
+// next visit or in-site navigation (static pages would be reused from the browser's router cache for minutes).
+export const dynamic = 'force-dynamic';
+
 export const metadata = pageMeta({
   title: 'Suraj More | Premium Sales Coach & Sales System Builder',
   absoluteTitle: true,

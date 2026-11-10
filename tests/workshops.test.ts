@@ -96,6 +96,34 @@ describe('workshop detail pages', () => {
     expect((await getOrderStatus(ob.orderId, false))?.cohort).toMatchObject({ id: b.id, slug: 'cohort-b' });
   });
 
+  it('banner endpoint always reflects the current next workshop and is never cached', async () => {
+    const { GET } = await import('@/app/api/workshops/next/route');
+    const soon = await makeCohort({ slug: 'banner-soon', title: 'Soon', startsAt: new Date(Date.now() + 3 * DAY), endsAt: new Date(Date.now() + 4 * DAY) });
+    await makeCohort({ slug: 'banner-later', title: 'Later', startsAt: new Date(Date.now() + 9 * DAY), endsAt: new Date(Date.now() + 10 * DAY) });
+
+    let res = await GET();
+    expect(res.headers.get('cache-control')).toMatch(/no-store/);
+    expect((await res.json()).cohort).toMatchObject({ title: 'Soon', href: '/workshop/banner-soon' });
+
+    // Closing the soonest one in /ops moves the banner to the next open workshop…
+    await prisma.workshopCohort.update({ where: { id: soon.id }, data: { status: 'CLOSED' } });
+    res = await GET();
+    expect((await res.json()).cohort).toMatchObject({ title: 'Later', href: '/workshop/banner-later' });
+
+    // …and with nothing open, the banner disappears.
+    await prisma.workshopCohort.updateMany({ data: { status: 'CLOSED' } });
+    expect((await (await GET()).json()).cohort).toBeNull();
+  });
+
+  it('a CLOSED workshop cannot be booked even if its checkout form was already open', async () => {
+    const c = await makeCohort({ slug: 'closing-now' });
+    await prisma.workshopCohort.update({ where: { id: c.id }, data: { status: 'CLOSED' } });
+    await expect(createWorkshopOrder(buyer({ cohortId: c.id }), undefined)).rejects.toMatchObject({ code: 'COHORT_CLOSED' });
+    expect(await prisma.order.count({ where: { cohortId: c.id } })).toBe(0); // nothing created, no payment session
+    expect((await getCohortPage('closing-now'))?.state).toBe('closed');
+    expect(await getUpcomingCohorts()).toEqual([]);
+  });
+
   it('rejects slugs that would collide with existing /workshop routes', () => {
     for (const slug of ['confirmation', 'checkout-mock']) {
       expect(cohortFormSchema.safeParse({ slug }).error?.issues.some((i) => i.path[0] === 'slug' && /reserved/.test(i.message))).toBe(true);

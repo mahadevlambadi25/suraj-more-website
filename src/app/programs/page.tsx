@@ -4,6 +4,10 @@ import { TrackedLink } from '@/components/TrackedLink';
 import { getFaqs, getPrograms, getUpcomingCohorts } from '@/lib/cms';
 import { pageMeta } from '@/lib/seo';
 
+// Shows live workshop availability: always rendered fresh, so a cohort closed in /ops disappears on the very
+// next visit or in-site navigation (static pages would be reused from the browser's router cache for minutes).
+export const dynamic = 'force-dynamic';
+
 export const metadata = pageMeta({
   title: 'Sales Coaching Programs | Suraj More',
   absoluteTitle: true,

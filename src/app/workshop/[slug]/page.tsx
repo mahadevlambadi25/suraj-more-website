@@ -14,8 +14,9 @@ import { getCohortPage, getFaqs, getFrameworks, getProgram } from '@/lib/cms';
 import { formatDate, formatInr, formatTime } from '@/lib/format';
 import { pageMeta, workshopSchemas } from '@/lib/seo';
 
-// Same cache window as the overview; saving a cohort in /ops revalidates every page immediately.
-export const revalidate = 300;
+// Shows live workshop availability: always rendered fresh, so a cohort closed in /ops disappears on the very
+// next visit or in-site navigation (static pages would be reused from the browser's router cache for minutes).
+export const dynamic = 'force-dynamic';
 
 // One database read per request, shared by generateMetadata and the page.
 const loadCohortPage = cache((slug: string) => getCohortPage(slug));

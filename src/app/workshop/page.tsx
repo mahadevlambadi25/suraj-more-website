@@ -8,7 +8,9 @@ import { getFaqs, getFrameworks, getProgram, getUpcomingCohorts } from '@/lib/cm
 import { formatInr } from '@/lib/format';
 import { pageMeta, workshopSchemas } from '@/lib/seo';
 
-export const revalidate = 300;
+// Shows live workshop availability: always rendered fresh, so a cohort closed in /ops disappears on the very
+// next visit or in-site navigation (static pages would be reused from the browser's router cache for minutes).
+export const dynamic = 'force-dynamic';
 
 export const metadata = pageMeta({
   title: 'One Skill Workshop: Live Sales Training | Suraj More',

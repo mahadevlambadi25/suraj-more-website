@@ -12,7 +12,8 @@ import { siteUrl } from '@/lib/seo';
 import './fonts.css';
 import './globals.css';
 
-// Cohort-driven UI (announcement strip, prices) refreshes every 5 minutes; the strip also self-expires client-side.
+// Static pages refresh every 5 minutes (and immediately when a cohort is saved in /ops). Pages that show
+// workshop availability render dynamically, and the announcement strip re-checks on navigation.
 export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -41,16 +42,22 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         <a href="#main" className="skip-link">Skip to content</a>
         <PublicOnly>
-          {cohort && (
-            <AnnouncementStrip
-              title={cohort.title}
-              href={`/workshop/${cohort.slug}`}
-              startsAt={cohort.startsAt}
-              dateLabel={formatDateShort(cohort.startsAt, cohort.timezone)}
-              timeLabel={formatTime(cohort.startsAt, cohort.timezone)}
-              priceLabel={formatInr(cohort.priceInr)}
-            />
-          )}
+          {/* Always mounted: it re-checks the next workshop on navigation, so closing/opening one in /ops
+              is reflected in already-open tabs. Server-rendered initial value avoids any layout flash. */}
+          <AnnouncementStrip
+            initial={
+              cohort
+                ? {
+                    title: cohort.title,
+                    href: `/workshop/${cohort.slug}`,
+                    startsAt: cohort.startsAt,
+                    dateLabel: formatDateShort(cohort.startsAt, cohort.timezone),
+                    timeLabel: formatTime(cohort.startsAt, cohort.timezone),
+                    priceLabel: formatInr(cohort.priceInr),
+                  }
+                : null
+            }
+          />
           <Header wordmark={settings.wordmark} nav={settings.nav} cta={settings.headerCta} />
         </PublicOnly>
         <main id="main">{children}</main>
