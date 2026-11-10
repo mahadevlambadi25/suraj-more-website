@@ -41,6 +41,22 @@ describe('public workshop listing (dynamic, from /ops cohorts)', () => {
     expect((await getCohortPage('two-seats'))?.state).toBe('sold_out');
   });
 
+  it('offer ladder lists every open workshop by its own title, linking to its page', async () => {
+    const { renderToStaticMarkup } = await import('react-dom/server');
+    const { createElement } = await import('react');
+    const { OfferLadder } = await import('@/components/Sections');
+    await makeCohort({ slug: 'w-one', title: '1 workshop', startsAt: new Date(Date.now() + 20 * DAY), endsAt: new Date(Date.now() + 21 * DAY) });
+    await makeCohort({ slug: 'w-two', title: '2 workshop', pricePaise: 10000, startsAt: new Date(Date.now() + 5 * DAY), endsAt: new Date(Date.now() + 6 * DAY) });
+    await makeCohort({ slug: 'w-three', title: '3 Skill Workshop', pricePaise: 6600, startsAt: new Date(Date.now() + 10 * DAY), endsAt: new Date(Date.now() + 11 * DAY) });
+    await makeCohort({ slug: 'w-closed', title: 'Closed one', status: 'CLOSED' });
+    const html = renderToStaticMarkup(createElement(OfferLadder, { programs: await getPrograms(), cohorts: await getUpcomingCohorts() }));
+    expect(html).toContain('3 upcoming dates');
+    expect([...html.matchAll(/href="\/workshop\/(w-[a-z]+)"/g)].map((m) => m[1])).toEqual(['w-two', 'w-three', 'w-one']); // soonest first
+    for (const t of ['1 workshop', '2 workshop', '3 Skill Workshop']) expect(html).toContain(t);
+    expect(html).not.toContain('Closed one');
+    expect(html).toContain('From ₹47');
+  });
+
   it('shows "From" pricing on the offer ladder when open dates have different prices', async () => {
     await makeCohort({ slug: 'p47' });
     expect((await getPrograms()).find((p) => p.id === 'workshop')?.priceLabel).toBe('₹47');

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
-import type { CaseStudy, Faq, Framework, Program, PublicCohort, Testimonial } from '@/lib/types';
-import { formatDate, formatInr, formatTime } from '@/lib/format';
+import type { CaseStudy, Faq, Framework, ListedCohort, Program, PublicCohort, Testimonial } from '@/lib/types';
+import { formatDate, formatDateShort, formatInr, formatTime } from '@/lib/format';
 import { ArrowRight } from './Icons';
 import { TrackedLink } from './TrackedLink';
 import { VideoPlayer } from './VideoPlayer';
@@ -57,7 +57,9 @@ export function FrameworkCard({ f }: { f: Framework }) {
 }
 
 // ── Offer ladder (three distinct tiers — never an undifferentiated list) ──
-export function OfferLadder({ programs, cohorts }: { programs: Program[]; cohorts: PublicCohort[] }) {
+const LADDER_DATES = 3; // workshop dates listed inside the ladder card before "+N more"
+
+export function OfferLadder({ programs, cohorts }: { programs: Program[]; cohorts: ListedCohort[] }) {
   const cohort = cohorts[0] ?? null; // soonest upcoming workshop
   const order: Program['id'][] = ['level-zero', 'workshop', 'mentorship'];
   const items = order.map((id) => programs.find((p) => p.id === id)!).filter(Boolean);
@@ -78,10 +80,26 @@ export function OfferLadder({ programs, cohorts }: { programs: Program[]; cohort
                   <p className="price">
                     {p.priceLabel ?? formatInr(cohort.priceInr)} <small>· live on Zoom</small>
                   </p>
-                  <p className="offer-status">
-                    Next cohort: {formatDate(cohort.startsAt, cohort.timezone)}
-                    {cohorts.length > 1 ? ` · ${cohorts.length} dates open` : ''}
+                  {/* Every published workshop, by its own title — each links to its own page. */}
+                  <p className="offer-dates-label">
+                    {cohorts.length === 1 ? 'Next date' : `${cohorts.length} upcoming dates`}
                   </p>
+                  <ul className="offer-dates">
+                    {cohorts.slice(0, LADDER_DATES).map((c) => (
+                      <li key={c.id}>
+                        <TrackedLink href={`/workshop/${c.slug}`} cta="ladder_workshop_date" placement="offer_ladder">
+                          <span className="offer-date-title">{c.title}</span>
+                          <span className="offer-date-meta">
+                            {formatDateShort(c.startsAt, c.timezone)} · {formatInr(c.priceInr)}
+                            {c.soldOut ? ' · Sold out' : ''}
+                          </span>
+                        </TrackedLink>
+                      </li>
+                    ))}
+                  </ul>
+                  {cohorts.length > LADDER_DATES && (
+                    <p className="offer-dates-more">+ {cohorts.length - LADDER_DATES} more date{cohorts.length - LADDER_DATES === 1 ? '' : 's'}</p>
+                  )}
                 </>
               ) : (
                 <>

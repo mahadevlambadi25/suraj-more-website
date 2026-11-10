@@ -4,6 +4,8 @@ import { defineConfig } from 'vitest/config';
 const TEST_DB = process.env.TEST_DATABASE_URL ?? 'postgresql://postgres:postgres@localhost:5433/suraj_test';
 
 export default defineConfig({
+  // Compile JSX like Next.js does (React 17+ automatic runtime) so server components can be rendered in tests.
+  esbuild: { jsx: 'automatic' },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
