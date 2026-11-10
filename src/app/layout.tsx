@@ -43,6 +43,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <PublicOnly>
           {cohort && (
             <AnnouncementStrip
+              title={cohort.title}
+              href={`/workshop/${cohort.slug}`}
               startsAt={cohort.startsAt}
               dateLabel={formatDateShort(cohort.startsAt, cohort.timezone)}
               timeLabel={formatTime(cohort.startsAt, cohort.timezone)}

@@ -8,9 +8,16 @@ const dt = z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/, 'Use the date pic
 const rupees = (label: string) =>
   z.coerce.number({ invalid_type_error: `${label} must be a number` }).min(0, `${label} cannot be negative`).max(10_00_000, `${label} is too large`);
 
+export const RESERVED_SLUGS = ['confirmation', 'checkout-mock'];
+
 export const cohortFormSchema = z
   .object({
-    slug: z.string().trim().regex(/^[a-z0-9-]{3,60}$/, 'Lowercase letters, digits and dashes (3–60 chars)'),
+    slug: z
+      .string()
+      .trim()
+      .regex(/^[a-z0-9-]{3,60}$/, 'Lowercase letters, digits and dashes (3–60 chars)')
+      // Each workshop is published at /workshop/<slug>; these paths are already taken by the checkout flow.
+      .refine((v) => !RESERVED_SLUGS.includes(v), 'This slug is reserved — please choose another'),
     title: z.string().trim().min(3).max(150),
     startsAt: dt,
     endsAt: dt,

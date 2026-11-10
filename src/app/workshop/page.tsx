@@ -1,12 +1,11 @@
-import { Countdown } from '@/components/Countdown';
 import { WaitlistForm } from '@/components/forms/WaitlistForm';
-import { WorkshopCheckoutForm } from '@/components/forms/WorkshopCheckoutForm';
 import { ArrowRight } from '@/components/Icons';
 import { MobileStickyCta } from '@/components/MobileStickyCta';
-import { FaqList, FrameworkCard, JsonLd, PageHero, Schedule, SectionHead } from '@/components/Sections';
+import { JsonLd, PageHero, SectionHead } from '@/components/Sections';
 import { TrackedLink } from '@/components/TrackedLink';
-import { getActiveCohort, getFaqs, getFrameworks, getProgram } from '@/lib/cms';
-import { formatDate, formatInr, formatTime } from '@/lib/format';
+import { WorkshopAbout, WorkshopCard, WorkshopFrameworksAndFaq } from '@/components/Workshop';
+import { getFaqs, getFrameworks, getProgram, getUpcomingCohorts } from '@/lib/cms';
+import { formatInr } from '@/lib/format';
 import { pageMeta, workshopSchemas } from '@/lib/seo';
 
 export const revalidate = 300;
@@ -19,117 +18,74 @@ export const metadata = pageMeta({
 });
 
 export default async function WorkshopPage() {
-  const [cohort, program, frameworks, faqs] = await Promise.all([getActiveCohort(), getProgram('workshop'), getFrameworks(), getFaqs()]);
-  const workshopFrameworks = frameworks.filter((f) => f.relatedProgram === 'workshop');
+  // Every workshop published (OPEN) in /ops and not yet started — soonest first.
+  const [cohorts, program, frameworks, faqs] = await Promise.all([getUpcomingCohorts(), getProgram('workshop'), getFrameworks(), getFaqs()]);
+  const single = cohorts.length === 1 && !cohorts[0].soldOut ? cohorts[0] : null;
+  const eyebrow = cohorts.length
+    ? `Live on Zoom · ${cohorts.length} upcoming date${cohorts.length === 1 ? '' : 's'}`
+    : 'Live workshop · Not currently open';
 
   return (
     <>
-      {cohort && <JsonLd data={workshopSchemas(cohort)} />}
-      <PageHero
-        eyebrow={cohort ? `Live on Zoom · ${formatDate(cohort.startsAt, cohort.timezone)}` : 'Live workshop · Not currently open'}
-        title="The One Skill Workshop"
-        lead={program.summary}
-      >
-        {cohort ? (
-          <>
-            <div className="btn-row" style={{ marginBottom: 12 }}>
-              <TrackedLink href="#register" className="btn btn--primary btn--lg" cta="workshop_hero" placement="hero">
-                Reserve Your Seat · {formatInr(cohort.priceInr)} <ArrowRight />
-              </TrackedLink>
-            </div>
-            {/* The anchor price is shown ONLY when marked as a verified real past price ([[CONFIRM: ₹999]]). */}
-            <p className="small" style={{ color: '#c4cbd5', marginBottom: 28 }}>
-              {cohort.compareAtPriceVerified && cohort.compareAtPriceInr ? (
-                <>
-                  <span className="compare" style={{ color: '#8e98a7' }}>Regular {formatInr(cohort.compareAtPriceInr)}</span>
-                  {formatInr(cohort.priceInr)}
-                </>
-              ) : (
-                formatInr(cohort.priceInr)
-              )}{' '}
-              · Live on Zoom
-            </p>
-            <p className="small" style={{ color: '#8e98a7', marginBottom: 10 }}>Starts in</p>
-            <Countdown to={cohort.startsAt} />
-          </>
-        ) : (
-          <TrackedLink href="#waitlist" className="btn btn--primary btn--lg" cta="workshop_waitlist_hero" placement="hero">
-            Join the Waitlist <ArrowRight />
-          </TrackedLink>
-        )}
+      {cohorts.length > 0 && <JsonLd data={cohorts.flatMap((c) => workshopSchemas(c, c.soldOut))} />}
+      <PageHero eyebrow={eyebrow} title="The One Skill Workshop" lead={program.summary}>
+        <div className="btn-row">
+          {single ? (
+            <TrackedLink href={`/workshop/${single.slug}#register`} className="btn btn--primary btn--lg" cta="workshop_hero" placement="hero">
+              Reserve Your Seat · {formatInr(single.priceInr)} <ArrowRight />
+            </TrackedLink>
+          ) : cohorts.length ? (
+            <TrackedLink href="#dates" className="btn btn--primary btn--lg" cta="workshop_hero_dates" placement="hero">
+              See Upcoming Dates <ArrowRight />
+            </TrackedLink>
+          ) : (
+            <TrackedLink href="#waitlist" className="btn btn--primary btn--lg" cta="workshop_waitlist_hero" placement="hero">
+              Join the Waitlist <ArrowRight />
+            </TrackedLink>
+          )}
+        </div>
       </PageHero>
 
-      <section className="section">
-        <div className="container grid-12">
-          <div style={{ gridColumn: 'span 7' }}>
-            <SectionHead eyebrow="The One Skill Workshop" title="What you’ll learn" />
-            <ul className="check-list">
-              {program.curriculum.map((c) => <li key={c}>{c}</li>)}
-              <li>Language you can use on your very next sales call</li>
-            </ul>
-            <h3 style={{ marginTop: 40 }}>Who it’s for</h3>
-            <p>{program.audience.join(' · ')} who already have conversations but convert them inconsistently.</p>
-            <h3 style={{ marginTop: 40 }}>Who it’s not for</h3>
-            <p>Anyone looking for manipulative scripts or guaranteed revenue. This is a skill, and it takes practice.</p>
-
-            {cohort && (
-              <>
-                <h3 style={{ marginTop: 40 }}>Schedule</h3>
-                <Schedule cohort={cohort} />
-                <p className="small" style={{ marginTop: 12 }}>
-                  All times in India Standard Time (IST). Starts {formatDate(cohort.startsAt, cohort.timezone)} at {formatTime(cohort.startsAt, cohort.timezone)}.
-                  {cohort.seatLimit ? ` Limited to ${cohort.seatLimit} participants.` : ''}
-                </p>
-              </>
-            )}
-          </div>
-
-          <aside style={{ gridColumn: '9 / span 4' }}>
-            <div className="sticky-aside">
-              {cohort ? (
-                <div className="form-card" id="register">
-                  <h2 style={{ fontSize: '1.5rem' }}>Reserve your seat</h2>
-                  <p className="small">{formatDate(cohort.startsAt, cohort.timezone)} · {formatTime(cohort.startsAt, cohort.timezone)} · Live on Zoom</p>
-                  <WorkshopCheckoutForm
-                    cohort={{
-                      id: cohort.id,
-                      title: cohort.title,
-                      priceInr: cohort.priceInr,
-                      compareAtPriceInr: cohort.compareAtPriceVerified ? cohort.compareAtPriceInr : null,
-                      vipAddon: cohort.vipAddon,
-                    }}
-                  />
-                </div>
-              ) : (
-                <div className="form-card" id="waitlist">
-                  <span className="tag tag--muted">Not currently open</span>
-                  <h2 style={{ fontSize: '1.5rem', marginTop: 14 }}>Notify me about the next cohort</h2>
-                  <p className="small">Dates for the next live workshop haven’t been announced yet. Join the waitlist and you’ll hear first.</p>
-                  <WaitlistForm programId="workshop" buttonLabel="Notify Me" />
-                </div>
-              )}
-            </div>
-          </aside>
-        </div>
-      </section>
-
-      <section className="section section--stone">
+      <section className="section section--stone" id="dates">
+        {/* Older links pointed at /workshop#register — keep that anchor landing on the dates. */}
+        <span id="register" aria-hidden="true" />
         <div className="container">
-          <SectionHead eyebrow="Inside the workshop" title="The frameworks we’ll practise live" />
-          <div className="frameworks">
-            {workshopFrameworks.map((f) => <FrameworkCard key={f.id} f={f} />)}
-          </div>
+          {cohorts.length ? (
+            <>
+              <SectionHead
+                eyebrow="Upcoming dates"
+                title={cohorts.length === 1 ? 'Next live workshop' : 'Choose your date'}
+                lead="Each date has its own schedule, price and registration. All sessions are live on Zoom, in India Standard Time."
+              />
+              <div className="workshop-list">
+                {cohorts.map((c) => <WorkshopCard key={c.id} cohort={c} />)}
+              </div>
+            </>
+          ) : (
+            <div className="container--narrow" style={{ marginInline: 'auto' }}>
+              <div className="form-card" id="waitlist">
+                <span className="tag tag--muted">Not currently open</span>
+                <h2 style={{ fontSize: '1.5rem', marginTop: 14 }}>Notify me about the next cohort</h2>
+                <p className="small">Dates for the next live workshop haven’t been announced yet. Join the waitlist and you’ll hear first.</p>
+                <WaitlistForm programId="workshop" buttonLabel="Notify Me" />
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
       <section className="section">
         <div className="container container--narrow">
-          <SectionHead eyebrow="Questions" title="Workshop FAQ" />
-          <FaqList faqs={faqs.filter((f) => f.topic !== 'pricing')} />
+          <WorkshopAbout program={program} />
         </div>
       </section>
 
-      <MobileStickyCta label={cohort ? `Reserve Your Seat · ${formatInr(cohort.priceInr)}` : 'Join the Waitlist'} href={cohort ? '#register' : '#waitlist'} />
+      <WorkshopFrameworksAndFaq frameworks={frameworks} faqs={faqs} />
+
+      <MobileStickyCta
+        label={single ? `Reserve Your Seat · ${formatInr(single.priceInr)}` : cohorts.length ? 'See Upcoming Dates' : 'Join the Waitlist'}
+        href={single ? `/workshop/${single.slug}#register` : cohorts.length ? '#dates' : '#waitlist'}
+      />
     </>
   );
 }

@@ -96,6 +96,12 @@ export interface Cohort {
 /** Public-safe projection of a cohort — never includes delivery (Zoom) details. */
 export type PublicCohort = Omit<Cohort, 'reminderCopy'>;
 
+/** A cohort as listed publicly, with live seat availability (seatsLeft is null when there is no limit). */
+export type ListedCohort = PublicCohort & { seatsLeft: number | null; soldOut: boolean };
+
+/** Public state of a single workshop page. Drafts and unknown slugs never get this far (404). */
+export type CohortPageState = 'open' | 'sold_out' | 'closed';
+
 export type Verification = 'client-reported' | 'independently-verified';
 
 export interface Testimonial {

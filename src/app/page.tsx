@@ -4,7 +4,7 @@ import { Portrait } from '@/components/Portrait';
 import { FaqList, FinalCta, FrameworkCard, JsonLd, OfferLadder, ProofList, SectionHead } from '@/components/Sections';
 import { TrackedLink } from '@/components/TrackedLink';
 import {
-  getActiveCohort,
+  getUpcomingCohorts,
   getFaqs,
   getFrameworks,
   getPrograms,
@@ -39,9 +39,9 @@ const PAINS = [
 ];
 
 export default async function HomePage() {
-  const [settings, cohort, programs, frameworks, faqs, testimonials, caseStudies, trust] = await Promise.all([
+  const [settings, cohorts, programs, frameworks, faqs, testimonials, caseStudies, trust] = await Promise.all([
     getSettings(),
-    getActiveCohort(),
+    getUpcomingCohorts(),
     getPrograms(),
     getFrameworks(),
     getFaqs(),
@@ -186,7 +186,7 @@ export default async function HomePage() {
             title={<span id="ladder-title">Start where you are</span>}
             lead="Begin free, go deeper in a live workshop, or apply for private mentorship."
           />
-          <OfferLadder programs={programs} cohort={cohort} />
+          <OfferLadder programs={programs} cohorts={cohorts} />
         </div>
       </section>
 

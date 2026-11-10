@@ -7,10 +7,10 @@ import { frameworks } from '@/content/frameworks';
 import { legalDocs } from '@/content/legal';
 import { programs } from '@/content/programs';
 import { caseStudies, testimonials, trustPoints } from '@/content/proof';
-import { findActiveCohortRow, findCohortRow, toCohort, toPublicCohort } from './cohorts';
+import { findActiveCohortRow, findCohortRow, findCohortRowBySlug, findOpenCohortRows, hideSamples, isCohortPurchasable, seatsTaken, toCohort, toPublicCohort } from './cohorts';
 import { formatInr } from './format';
 import { getMergedSettings } from './settings';
-import type { Cohort, LegalDoc, Program, ProgramId, PublicCohort } from './types';
+import type { Cohort, CohortPageState, LegalDoc, ListedCohort, Program, ProgramId, PublicCohort } from './types';
 
 export { isCohortPurchasable } from './cohorts';
 
@@ -32,6 +32,37 @@ export async function getActiveCohort(now = Date.now()): Promise<PublicCohort | 
   }
 }
 
+async function withSeats(row: Parameters<typeof toCohort>[0]): Promise<ListedCohort> {
+  const seatsLeft = row.seatLimit != null ? Math.max(0, row.seatLimit - (await seatsTaken(row.id))) : null;
+  return { ...toPublicCohort(toCohort(row)), seatsLeft, soldOut: seatsLeft === 0 };
+}
+
+/**
+ * Every upcoming workshop Suraj has published (status OPEN, not yet started) — soonest first, with live
+ * seat availability. Drafts, closed and past cohorts never appear. Fails SAFE (empty list → waitlist).
+ */
+export async function getUpcomingCohorts(now = Date.now()): Promise<ListedCohort[]> {
+  try {
+    return await Promise.all((await findOpenCohortRows(now)).map(withSeats));
+  } catch (err) {
+    console.error('[cms] upcoming cohorts unavailable', err instanceof Error ? err.message : err);
+    return [];
+  }
+}
+
+/**
+ * One workshop's public page. Returns null (→ 404) for unknown slugs, drafts and hidden samples.
+ * Closed or already-started cohorts stay reachable (shared links keep working) but are not bookable.
+ */
+export async function getCohortPage(slug: string, now = Date.now()): Promise<{ cohort: ListedCohort; state: CohortPageState } | null> {
+  const row = await findCohortRowBySlug(slug);
+  if (!row || row.status === 'DRAFT') return null;
+  if (row.isSample && hideSamples()) return null;
+  const cohort = await withSeats(row);
+  const state: CohortPageState = !isCohortPurchasable(row, now) ? 'closed' : cohort.soldOut ? 'sold_out' : 'open';
+  return { cohort, state };
+}
+
 /** Server-only: full cohort record (used by checkout + fulfilment). Never includes Zoom details. */
 export async function getCohortById(id: string): Promise<Cohort | null> {
   const row = await findCohortRow(id);
@@ -39,11 +70,12 @@ export async function getCohortById(id: string): Promise<Cohort | null> {
 }
 
 export async function getPrograms(): Promise<Program[]> {
-  const cohort = await getActiveCohort();
+  const upcoming = await getUpcomingCohorts();
+  const prices = [...new Set(upcoming.map((c) => c.priceInr))];
   return programs.map((p) => {
     if (p.id !== 'workshop') return p;
-    return cohort
-      ? { ...p, status: 'open' as const, priceLabel: formatInr(cohort.priceInr), cta: { label: 'Explore the Workshop', href: '/workshop' } }
+    return upcoming.length
+      ? { ...p, status: 'open' as const, priceLabel: `${prices.length > 1 ? 'From ' : ''}${formatInr(Math.min(...prices))}`, cta: { label: 'Explore the Workshop', href: '/workshop' } }
       : { ...p, status: 'waitlist' as const, priceLabel: null, cta: { label: 'Join the Waitlist', href: '/workshop#waitlist' } };
   });
 }

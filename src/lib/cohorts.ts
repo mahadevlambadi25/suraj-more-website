@@ -10,7 +10,7 @@ export const sessionsSchema = z.array(
 );
 
 /** Sample cohorts are hidden in production unless explicitly allowed. Read at call time. */
-function hideSamples() {
+export function hideSamples() {
   return process.env.NODE_ENV === 'production' && process.env.ALLOW_SAMPLE_CONTENT !== 'true';
 }
 
@@ -54,13 +54,24 @@ export function toPublicCohort(c: Cohort): PublicCohort {
   return rest;
 }
 
-export async function findActiveCohortRow(now = Date.now()) {
+/** Every publicly listed cohort: OPEN, not started, not a hidden sample — soonest first. */
+export async function findOpenCohortRows(now = Date.now()) {
   const rows = await prisma.workshopCohort.findMany({
     where: { status: 'OPEN', startsAt: { gt: new Date(now) } },
     orderBy: { startsAt: 'asc' },
-    take: 10,
+    take: 50,
   });
-  return rows.find((r) => isCohortPurchasable(r, now)) ?? null;
+  return rows.filter((r) => isCohortPurchasable(r, now));
+}
+
+/** The next upcoming cohort (announcement strip, offer ladder, post-training CTA). */
+export async function findActiveCohortRow(now = Date.now()) {
+  return (await findOpenCohortRows(now))[0] ?? null;
+}
+
+export async function findCohortRowBySlug(slug: string) {
+  if (!/^[a-z0-9-]{3,60}$/.test(slug)) return null;
+  return prisma.workshopCohort.findUnique({ where: { slug } });
 }
 
 export async function findCohortRow(id: string) {

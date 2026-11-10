@@ -285,6 +285,20 @@ p { margin: 0 0 1em; text-wrap: pretty; }
 .offer .btn { margin-top: auto; }
 .offer-status { font-size: 0.85rem; color: var(--body); margin: -8px 0 16px; }
 
+/* ── Upcoming workshops (/workshop) ─────────────────────── */
+.workshop-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 20px; align-items: stretch; }
+.workshop-card { display: flex; flex-direction: column; }
+.workshop-card h3 { margin: 14px 0 16px; }
+.workshop-card-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.workshop-card-seats { font-size: 0.85rem; font-weight: 600; color: var(--brass-strong); }
+.workshop-card-facts { margin: 0 0 20px; display: grid; gap: 8px; }
+.workshop-card-facts > div { display: grid; grid-template-columns: 64px 1fr; gap: 12px; font-size: 0.95rem; }
+.workshop-card-facts dt { color: var(--body); }
+.workshop-card-facts dd { margin: 0; color: var(--text); font-weight: 500; }
+.workshop-card-price { margin: auto 0 18px; padding-top: 16px; border-top: 1px solid var(--stone); }
+.workshop-card-price .price { display: block; font-weight: 600; font-size: 1.6rem; color: var(--text); font-variant-numeric: tabular-nums; }
+.workshop-card-addon { display: block; margin-top: 2px; font-size: 0.88rem; color: var(--body); }
+
 /* ── Proof ──────────────────────────────────────────────── */
 .testimonial blockquote { margin: 0 0 18px; font-family: var(--font-serif); font-size: 1.3rem; line-height: 1.4; color: var(--text); }
 .testimonial .who { font-weight: 600; color: var(--text); }

@@ -36,7 +36,9 @@ export function personSchema() {
 }
 
 /** Course + Event schema — emitted only while a cohort is active, so it disappears automatically when expired. */
-export function workshopSchemas(cohort: PublicCohort) {
+export function workshopSchemas(cohort: PublicCohort, soldOut = false) {
+  const availability = soldOut ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock';
+  const url = `${siteUrl}/workshop/${cohort.slug}`;
   const course = {
     '@context': 'https://schema.org',
     '@type': 'Course',
@@ -48,9 +50,9 @@ export function workshopSchemas(cohort: PublicCohort) {
       courseMode: 'online',
       startDate: cohort.startsAt,
       endDate: cohort.endsAt,
-      location: { '@type': 'VirtualLocation', url: `${siteUrl}/workshop` },
+      location: { '@type': 'VirtualLocation', url },
     },
-    offers: { '@type': 'Offer', price: cohort.priceInr, priceCurrency: 'INR', availability: 'https://schema.org/InStock', url: `${siteUrl}/workshop`, category: 'Paid' },
+    offers: { '@type': 'Offer', price: cohort.priceInr, priceCurrency: 'INR', availability, url, category: 'Paid' },
   };
   const event = {
     '@context': 'https://schema.org',
@@ -60,9 +62,9 @@ export function workshopSchemas(cohort: PublicCohort) {
     endDate: cohort.endsAt,
     eventAttendanceMode: 'https://schema.org/OnlineEventAttendanceMode',
     eventStatus: 'https://schema.org/EventScheduled',
-    location: { '@type': 'VirtualLocation', url: `${siteUrl}/workshop` },
+    location: { '@type': 'VirtualLocation', url },
     organizer: { '@type': 'Person', name: settings.founderName, url: siteUrl },
-    offers: { '@type': 'Offer', price: cohort.priceInr, priceCurrency: 'INR', availability: 'https://schema.org/InStock', url: `${siteUrl}/workshop`, validFrom: new Date().toISOString().slice(0, 10) },
+    offers: { '@type': 'Offer', price: cohort.priceInr, priceCurrency: 'INR', availability, url, validFrom: new Date().toISOString().slice(0, 10) },
   };
   return [course, event];
 }

@@ -1,7 +1,7 @@
 import { MobileStickyCta } from '@/components/MobileStickyCta';
 import { FaqList, OfferLadder, PageHero, SectionHead } from '@/components/Sections';
 import { TrackedLink } from '@/components/TrackedLink';
-import { getActiveCohort, getFaqs, getPrograms } from '@/lib/cms';
+import { getFaqs, getPrograms, getUpcomingCohorts } from '@/lib/cms';
 import { pageMeta } from '@/lib/seo';
 
 export const metadata = pageMeta({
@@ -20,7 +20,7 @@ const FIT = [
 ];
 
 export default async function ProgramsPage() {
-  const [programs, cohort, faqs] = await Promise.all([getPrograms(), getActiveCohort(), getFaqs()]);
+  const [programs, cohorts, faqs] = await Promise.all([getPrograms(), getUpcomingCohorts(), getFaqs()]);
   const innerCircle = programs.find((p) => p.id === 'inner-circle');
 
   return (
@@ -52,7 +52,7 @@ export default async function ProgramsPage() {
       <section className="section section--stone" id="ladder">
         <div className="container">
           <SectionHead eyebrow="The offer ladder" title="Choose a Program" />
-          <OfferLadder programs={programs} cohort={cohort} />
+          <OfferLadder programs={programs} cohorts={cohorts} />
           {innerCircle && (
             <p className="center small" style={{ marginTop: 32 }}>
               <span className="tag tag--muted">Coming soon</span>&nbsp; <strong>{innerCircle.title}</strong>: coming soon. Details will be shared once confirmed.

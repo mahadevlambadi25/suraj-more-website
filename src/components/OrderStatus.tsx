@@ -15,7 +15,7 @@ type Status = {
   vipAddon: boolean;
   firstName: string;
   email: string;
-  cohort: { id: string; title: string; timezone: string; sessions: { label: string; startsAt: string; endsAt: string; topic: string }[] } | null;
+  cohort: { id: string; slug?: string; title: string; timezone: string; sessions: { label: string; startsAt: string; endsAt: string; topic: string }[] } | null;
   delivery?: { confirmation: boolean; joinDetails: boolean };
   firePurchase: boolean;
 };
@@ -110,7 +110,7 @@ export function OrderStatus({ orderId, supportEmail, whatsappHref }: { orderId: 
         <h1 style={{ fontSize: '2rem' }}>{data.status === 'dropped' ? 'Payment was not completed' : 'Payment didn’t go through'}</h1>
         <p>No money was taken for this attempt. If your account was debited, it will be reversed automatically by your bank.</p>
         <div className="btn-row" style={{ justifyContent: 'center', margin: '24px 0' }}>
-          <Link href="/workshop#register" className="btn btn--primary">Try Again</Link>
+          <Link href={data.cohort?.slug ? `/workshop/${data.cohort.slug}#register` : '/workshop'} className="btn btn--primary">Try Again</Link>
         </div>
         {support}
       </div>

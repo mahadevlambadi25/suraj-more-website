@@ -57,7 +57,8 @@ export function FrameworkCard({ f }: { f: Framework }) {
 }
 
 // ── Offer ladder (three distinct tiers — never an undifferentiated list) ──
-export function OfferLadder({ programs, cohort }: { programs: Program[]; cohort: PublicCohort | null }) {
+export function OfferLadder({ programs, cohorts }: { programs: Program[]; cohorts: PublicCohort[] }) {
+  const cohort = cohorts[0] ?? null; // soonest upcoming workshop
   const order: Program['id'][] = ['level-zero', 'workshop', 'mentorship'];
   const items = order.map((id) => programs.find((p) => p.id === id)!).filter(Boolean);
   return (
@@ -75,9 +76,12 @@ export function OfferLadder({ programs, cohort }: { programs: Program[]; cohort:
               cohort ? (
                 <>
                   <p className="price">
-                    {formatInr(cohort.priceInr)} <small>· live on Zoom</small>
+                    {p.priceLabel ?? formatInr(cohort.priceInr)} <small>· live on Zoom</small>
                   </p>
-                  <p className="offer-status">Next cohort: {formatDate(cohort.startsAt, cohort.timezone)}</p>
+                  <p className="offer-status">
+                    Next cohort: {formatDate(cohort.startsAt, cohort.timezone)}
+                    {cohorts.length > 1 ? ` · ${cohorts.length} dates open` : ''}
+                  </p>
                 </>
               ) : (
                 <>
