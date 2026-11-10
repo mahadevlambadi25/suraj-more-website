@@ -52,29 +52,6 @@ export default async function LeadDetail({ params, searchParams }: { params: Pro
               </div>
             )}
           </Card>
-
-          <Card title="Consent history" description="Exact wording, time and source of every consent choice" flush>
-            {lead.consents.length === 0 ? (
-              <EmptyState title="No consent records" />
-            ) : (
-              <div className="o-table-wrap">
-                <table className="o-table">
-                  <thead><tr><th>Type</th><th>Choice</th><th className="o-hide-sm">Wording</th><th className="o-hide-sm">Source</th><th>Date</th></tr></thead>
-                  <tbody>
-                    {lead.consents.map((c) => (
-                      <tr key={c.id}>
-                        <td style={{ textTransform: 'capitalize' }}>{label(c.type)}</td>
-                        <td><Badge tone={c.granted ? 'ok' : 'muted'}>{c.granted ? 'granted' : 'declined'}</Badge></td>
-                        <td className="o-hide-sm o-small">{c.wording}{c.version ? ` (v${c.version})` : ''}</td>
-                        <td className="o-hide-sm o-small">{c.source}</td>
-                        <td className="o-nowrap">{fmtDate(c.createdAt)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </Card>
         </div>
 
         <div className="o-stack">

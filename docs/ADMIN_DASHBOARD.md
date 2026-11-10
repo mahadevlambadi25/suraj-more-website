@@ -30,7 +30,7 @@ Sessions: HttpOnly, `Secure`, `SameSite=Strict` cookie (`__Host-` prefixed in pr
 | Page | What it does |
 |---|---|
 | **Overview** `/ops` | Leads, registrations, paid orders, net revenue, pending, failed, applications, waitlist (live queries). Orders needing attention and recent delivery problems. |
-| **Leads** `/ops/leads` | Search name/email; filter by source, status and date (IST); paginate; lead detail with UTM, consent history and activity; status changes; **CSV export** (formula-injection safe, audited). |
+| **Leads** `/ops/leads` | Search name/email; filter by source, status and date (IST); paginate; lead detail with UTM and activity (consent records are still saved in the `ConsentRecord` table, but not listed in the admin); status changes; **CSV export** (formula-injection safe, audited). |
 | **Workshops** `/ops/workshops` | Create/edit cohorts: dates in IST, price in ₹ (stored as paise), seat limit, compare-at price (shown only if marked verified), VIP add-on, sessions, private Zoom link. Participants and waitlist. Closed or started cohorts can never be booked. Price changes only affect new orders. |
 | **Orders & payments** `/ops/orders` | Filters: all / paid / pending / failed / refunded / needs review / needs attention; search by order no., Cashfree id, email or name. Order detail: customer, line items, payments, refunds, webhook events, delivery status, timeline. Actions: *Check status with Cashfree*, *Retry confirmation/Zoom/CRM*, *Request refund*. **There is no "mark as paid".** |
 | **Webhooks** `/ops/webhooks` | Every event with id, type, provider, signature check, status, attempts, error and linked order. **Retry** re-processes a FAILED event from its stored payload. It is idempotent and audited. |
