@@ -81,8 +81,8 @@ export default async function WorkshopCohortPage({ params }: { params: Promise<{
       </PageHero>
 
       <section className="section">
-        <div className="container grid-12">
-          <div style={{ gridColumn: 'span 7' }}>
+        <div className="container grid-12 workshop-layout">
+          <div className="workshop-main">
             <WorkshopAbout program={program} />
             <h3 style={{ marginTop: 40 }}>Schedule</h3>
             <Schedule cohort={cohort} />
@@ -92,7 +92,7 @@ export default async function WorkshopCohortPage({ params }: { params: Promise<{
             </p>
           </div>
 
-          <aside style={{ gridColumn: '9 / span 4' }}>
+          <aside className="workshop-aside">
             <div className="sticky-aside">
               {open ? (
                 <div className="form-card" id="register">
