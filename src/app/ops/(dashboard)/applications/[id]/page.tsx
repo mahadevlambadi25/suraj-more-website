@@ -42,9 +42,7 @@ export default async function ApplicationDetail({ params, searchParams }: { para
           <Card title="Their business">
             <KV wide items={[['Offer', <span key="o" className="o-prewrap">{a.offer}</span>], ['Biggest sales challenge', <span key="c" className="o-prewrap">{a.salesChallenge}</span>], ['Desired 90-day outcome', <span key="d" className="o-prewrap">{a.desiredOutcome}</span>], ...(a.revenueRange ? ([['Revenue range', a.revenueRange]] as [string, string][]) : [])]} />
           </Card>
-        </div>
 
-        <div className="o-stack">
           <Card title="Applicant">
             <KV
               items={[
@@ -58,7 +56,9 @@ export default async function ApplicationDetail({ params, searchParams }: { para
               ]}
             />
           </Card>
+        </div>
 
+        <div className="o-stack">
           {a.status !== 'NEW' ? (
             <Card title="Decision">
               <KV
