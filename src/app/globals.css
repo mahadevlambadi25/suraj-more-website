@@ -237,7 +237,8 @@ p { margin: 0 0 1em; text-wrap: pretty; }
 /* ── Frameworks / step diagrams ─────────────────────────── */
 .frameworks { display: grid; gap: 24px; }
 .framework { display: grid; grid-template-columns: 4fr 8fr; gap: clamp(24px, 4vw, 56px); align-items: start; padding: clamp(28px, 4vw, 44px); }
-.framework .tag { margin-bottom: 14px; }
+/* Framework taglines are short sentences, not labels: an accent line instead of a pill so they wrap cleanly. */
+.tagline { margin: 0 0 14px; padding-left: 12px; border-left: 2px solid var(--brass); font-size: 0.95rem; font-weight: 600; line-height: 1.45; color: var(--brass-strong); max-width: 36ch; }
 @media (max-width: 900px) { .framework { grid-template-columns: 1fr; } }
 .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); counter-reset: step; position: relative; }
 .steps::before { content: ''; position: absolute; top: 19px; left: 20px; right: 20px; height: 1px; background: linear-gradient(90deg, var(--brass), rgba(184, 149, 90, 0.25)); }

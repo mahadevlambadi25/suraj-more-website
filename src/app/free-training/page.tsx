@@ -44,7 +44,7 @@ export default async function FreeTrainingPage() {
           <ul className="cards cards--3" style={{ listStyle: 'none', padding: 0 }}>
             {frameworks.map((f) => (
               <li key={f.id} className="card">
-                <span className="tag">{f.tagline}</span>
+                <p className="tagline">{f.tagline}</p>
                 <h3 style={{ marginTop: 14 }}>{f.name}</h3>
                 <p style={{ margin: 0 }}>{f.description}</p>
               </li>

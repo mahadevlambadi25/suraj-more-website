@@ -40,7 +40,7 @@ export function FrameworkCard({ f }: { f: Framework }) {
   return (
     <article className="card framework" id={f.id}>
       <div>
-        <span className="tag">{f.tagline}</span>
+        <p className="tagline">{f.tagline}</p>
         <h3 style={{ fontSize: '1.6rem' }}>{f.name}</h3>
         <p style={{ margin: 0 }}>{f.description}</p>
       </div>
