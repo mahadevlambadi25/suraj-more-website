@@ -117,7 +117,7 @@ export function OfferLadder({ programs, cohorts }: { programs: Program[]; cohort
               <div><dt>Format</dt><dd>{p.format}</dd></div>
             </dl>
             <ul className="check-list">
-              {p.curriculum.slice(0, 3).map((c) => (
+              {(p.ladderPoints ?? p.curriculum).slice(0, 3).map((c) => (
                 <li key={c}>{c}</li>
               ))}
             </ul>

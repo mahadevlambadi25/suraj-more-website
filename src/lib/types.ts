@@ -59,6 +59,8 @@ export interface Program {
   audience: string[];
   /** One short "who it's for" line for the offer-ladder cards (PRD §7.1). */
   ladderAudience?: string;
+  /** Up to 3 short points for the offer-ladder card; falls back to the first 3 curriculum items. */
+  ladderPoints?: string[];
   format: string;
   curriculum: string[];
   /** What a ticket includes (PRD §7.2 "Included"). */

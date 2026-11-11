@@ -30,6 +30,7 @@ export const programs: Program[] = [
     ladderSummary: 'Two live days on Zoom, practising the one skill that moves the most conversations forward.',
     audience: ['Coaches', 'Consultants', 'Sales professionals'],
     ladderAudience: 'Coaches, consultants and sales professionals',
+    ladderPoints: ['Day 1: The One Skill and the Sales Arm Framework', 'Day 2: The Doctor Frame and the C3 Certainty Reframe', 'Language you can use on your next sales call'],
     format: '2-day live workshop on Zoom',
     // PRD §7.2 (Day 1 / Day 2). [[CONFIRM: final session wording with Suraj]]
     curriculum: [
